@@ -10,6 +10,7 @@ final class MapViewModel {
     var poposPlaces:    [POPOSPlace]    = []
     var parkPlaces:     [ParkPlace]     = []
     var parkPolygons:   [ParkPolygon]   = []
+    var artPlaces:      [ArtPlace]      = []
 
     // Active categories (set by AppRouter after category picker)
     var activeCategories: Set<AppCategory> = Set(AppCategory.allCases)
@@ -39,6 +40,10 @@ final class MapViewModel {
         if activeCategories.contains(.park) {
             let parkPins = parkPlaces.map { PlacePin(from: $0) }
             pins.append(contentsOf: parkPins)
+        }
+        if activeCategories.contains(.art) {
+            let artPins = artPlaces.map { PlacePin(from: $0) }
+            pins.append(contentsOf: artPins)
         }
         return pins
     }
@@ -94,6 +99,10 @@ final class MapViewModel {
         self.parkPolygons = polygons
     }
 
+    func loadArtPlaces(_ places: [ArtPlace]) {
+        self.artPlaces = places
+    }
+
     // MARK: - Navigation
 
     func navigateTo(_ pin: PlacePin) {
@@ -128,6 +137,11 @@ final class MapViewModel {
     func parkPlace(for pin: PlacePin) -> ParkPlace? {
         guard pin.category == .park else { return nil }
         return parkPlaces.first { $0.id == pin.id }
+    }
+
+    func artPlace(for pin: PlacePin) -> ArtPlace? {
+        guard pin.category == .art else { return nil }
+        return artPlaces.first { $0.id == pin.id }
     }
 
     // MARK: - Actor filter
