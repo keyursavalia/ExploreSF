@@ -1,5 +1,5 @@
-# Design assets and local resources — never commit
-resources/
+# Design assets and local resources — never commit (root-anchored to avoid matching ExploreSF/Resources/)
+/resources/
 
 # API keys and secrets — never commit; copy Config.template.swift → Config.swift
 ExploreSF/Config.swift
