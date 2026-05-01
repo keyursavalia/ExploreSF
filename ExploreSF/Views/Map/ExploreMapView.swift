@@ -6,6 +6,7 @@ struct ExploreMapView: View {
     @Query(sort: \MovieLocation.title)  private var allFilm:  [MovieLocation]
     @Query(sort: \POPOSLocation.name)   private var allPOPOS: [POPOSLocation]
     @Query(sort: \ParkLocation.name)    private var allParks: [ParkLocation]
+    @Query(sort: \ArtLocation.title)    private var allArt:   [ArtLocation]
 
     @State private var viewModel = MapViewModel()
     @State private var cameraPosition: MapCameraPosition = .region(
@@ -14,6 +15,7 @@ struct ExploreMapView: View {
             span:   MKCoordinateSpan(latitudeDelta: 0.12, longitudeDelta: 0.12)
         )
     )
+    @State private var showCategoryPopover = false
 
     @Environment(AppRouter.self) private var router
 
@@ -43,6 +45,20 @@ struct ExploreMapView: View {
                 availableYears:         viewModel.availableYears,
                 onActorSelected:        { name in await viewModel.applyActorFilter(name: name) }
             )
+
+            // Floating category toggle — bottom of map, above tab bar
+            VStack {
+                Spacer()
+                CategoryToggleBar(
+                    activeCategories: router.activeCategories,
+                    isExpanded: $showCategoryPopover,
+                    onApply: { cats in
+                        router.applyCategories(cats)
+                        showCategoryPopover = false
+                    }
+                )
+                .padding(.bottom, 90)
+            }
         }
         .sheet(item: $vm.selectedPin) { pin in
             MapPinSliderView(pin: pin, mapViewModel: viewModel)
@@ -57,6 +73,9 @@ struct ExploreMapView: View {
         }
         .onChange(of: allParks, initial: true) { _, new in
             viewModel.loadParkPlaces(new.map(ParkPlace.init), polygons: loadParkPolygons())
+        }
+        .onChange(of: allArt, initial: true) { _, new in
+            viewModel.loadArtPlaces(new.map(ArtPlace.init))
         }
         .onChange(of: router.activeCategories, initial: true) { _, cats in
             viewModel.activeCategories = cats
@@ -89,6 +108,10 @@ struct ExploreMapView: View {
         case .park:
             Marker(pin.displayName, systemImage: "tree", coordinate: pin.coordinate)
                 .tint(AppCategory.park.color)
+                .tag(pin)
+        case .art:
+            Marker(pin.displayName, systemImage: "photo.artframe", coordinate: pin.coordinate)
+                .tint(AppCategory.art.color)
                 .tag(pin)
         }
     }
