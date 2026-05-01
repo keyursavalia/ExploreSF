@@ -14,7 +14,7 @@ struct POPOSPinSliderContentView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 headerSection
-                if let scene = vm.lookAroundScene { lookAroundView(scene: scene) }
+                if let scene = vm.lookAroundScene { lookAroundView(scene) }
                 amenitiesSection
                 if !place.hours.isEmpty { hoursRow }
                 directionsButton
