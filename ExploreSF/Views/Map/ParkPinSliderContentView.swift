@@ -14,7 +14,7 @@ struct ParkPinSliderContentView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 headerSection
-                if let scene = vm.lookAroundScene { lookAroundView(scene) }
+                if let scene = vm.lookAroundScene { lookAroundView(scene: scene) }
                 infoRows
                 directionsButton
             }
