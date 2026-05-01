@@ -29,7 +29,7 @@ struct MovieDetailView: View {
                     )
 
                     MovieDetailLocationsView(locations: viewModel.entry.locations) { location in
-                        router.navigate(to: location)
+                        router.navigateTo(pin: PlacePin(from: location))
                     }
                 }
                 .padding(.vertical, 20)
