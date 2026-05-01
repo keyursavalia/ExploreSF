@@ -4,7 +4,7 @@ import SwiftData
 @main
 struct ExploreSFApp: App {
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([MovieLocation.self])
+        let schema = Schema([MovieLocation.self, POPOSLocation.self, ParkLocation.self])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {
             return try ModelContainer(for: schema, configurations: [config])
