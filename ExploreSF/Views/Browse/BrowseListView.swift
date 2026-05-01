@@ -8,38 +8,25 @@ struct BrowseListView: View {
 
     @State private var vm = BrowseListViewModel()
     @State private var showCategoryPicker = false
-
-    @Environment(AppRouter.self) private var router
-
-    // Film detail navigation
     @State private var selectedFilmEntry: FilmEntry? = nil
     @State private var selectedPOPOS: POPOSPlace? = nil
     @State private var selectedPark: ParkPlace? = nil
 
+    @Environment(AppRouter.self) private var router
+
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0, pinnedViews: []) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        BrowseListHeaderView(
-                            activeCategories: router.activeCategories,
-                            totalCount: vm.totalCount,
-                            onChangeCategoriesTap: { showCategoryPicker = true }
-                        )
-                        .padding(.horizontal, 20)
-                        .padding(.top, 8)
-
-                        searchBar
-                            .padding(.horizontal, 20)
-                            .padding(.top, 20)
-                    }
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    headerArea
+                    searchBar.padding(.horizontal, 20).padding(.top, 20)
 
                     if vm.totalCount == 0 {
                         emptyState
                     } else {
-                        categorySection(for: .film)
-                        categorySection(for: .popos)
-                        categorySection(for: .park)
+                        filmSection
+                        poposSection
+                        parkSection
                     }
                 }
                 .padding(.bottom, 100)
@@ -49,75 +36,132 @@ struct BrowseListView: View {
             .navigationBarHidden(true)
         }
         .sheet(isPresented: $showCategoryPicker) {
-            CategoryPickerView(isFirstRun: false, onApply: { categories in
-                router.applyCategories(categories)
+            CategoryPickerView(isFirstRun: false, onApply: { cats in
+                router.applyCategories(cats)
                 showCategoryPicker = false
             }, onClose: { showCategoryPicker = false })
         }
         .sheet(item: $selectedFilmEntry) { entry in
-            NavigationStack {
-                MovieDetailView(viewModel: MovieDetailViewModel(entry: entry))
-            }
+            NavigationStack { MovieDetailView(viewModel: MovieDetailViewModel(entry: entry)) }
+        }
+        .sheet(item: $selectedPOPOS) { place in
+            POPOSDetailView(place: place)
+        }
+        .sheet(item: $selectedPark) { place in
+            ParkDetailView(place: place, polygon: nil)
         }
         .onChange(of: allFilm, initial: true)  { _, new in vm.loadFilm(new.map(FilmLocation.init)) }
         .onChange(of: allPOPOS, initial: true) { _, new in vm.loadPOPOS(new.map(POPOSPlace.init)) }
         .onChange(of: allParks, initial: true) { _, new in vm.loadParks(new.map(ParkPlace.init)) }
-        .onChange(of: router.activeCategories, initial: true) { _, cats in
-            vm.activeCategories = cats
-        }
+        .onChange(of: router.activeCategories, initial: true) { _, cats in vm.activeCategories = cats }
     }
+
+    // MARK: - Header
+
+    private var headerArea: some View {
+        BrowseListHeaderView(
+            activeCategories: router.activeCategories,
+            totalCount: vm.totalCount,
+            onChangeCategoriesTap: { showCategoryPicker = true }
+        )
+        .padding(.horizontal, 20)
+        .padding(.top, 8)
+    }
+
+    // MARK: - Search
 
     private var searchBar: some View {
         @Bindable var bindVm = vm
-        return HStack(spacing: 10) {
-            HStack(spacing: 8) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 15))
-                    .foregroundStyle(Color.appInk3)
-                TextField("Search…", text: $bindVm.searchText)
-                    .font(.system(size: 15))
-                    .foregroundStyle(Color.appInk)
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .background(Color.appCard)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12).stroke(Color.appCardEdge, lineWidth: 1)
-            )
+        return HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 15))
+                .foregroundStyle(Color.appInk3)
+            TextField("Search…", text: $bindVm.searchText)
+                .font(.system(size: 15))
+                .foregroundStyle(Color.appInk)
         }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(Color.appCard)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.appCardEdge, lineWidth: 1))
     }
+
+    // MARK: - Film section
 
     @ViewBuilder
-    private func categorySection(for category: AppCategory) -> some View {
-        let items = itemsForCategory(category)
-        if !items.isEmpty && router.activeCategories.contains(category) {
+    private var filmSection: some View {
+        if router.activeCategories.contains(.film) && !vm.filteredFilm.isEmpty {
             VStack(alignment: .leading, spacing: 0) {
                 if router.activeCategories.count > 1 {
-                    categorySectionHeader(category, count: items.count)
-                        .padding(.horizontal, 20)
-                        .padding(.top, 24)
-                        .padding(.bottom, 10)
+                    sectionHeader(.film, count: vm.filteredFilm.count)
                 }
-
-                VStack(spacing: 0) {
-                    ForEach(Array(items.enumerated()), id: \.offset) { idx, item in
-                        rowView(for: item, category: category, index: idx + 1)
-                            .padding(.horizontal, 16)
-                        Divider()
-                            .background(Color.appHairline)
+                ForEach(Array(vm.filteredFilm.enumerated()), id: \.element.id) { idx, loc in
+                    Button {
+                        selectedFilmEntry = FilmEntry(
+                            id: loc.title + loc.releaseYear,
+                            title: loc.title,
+                            releaseYear: loc.releaseYear,
+                            locations: vm.filteredFilm.filter { $0.title == loc.title && $0.releaseYear == loc.releaseYear }
+                        )
+                    } label: {
+                        FilmPlaceRowView(location: loc, index: idx + 1)
                             .padding(.horizontal, 16)
                     }
+                    .buttonStyle(.plain)
+                    Divider().background(Color.appHairline).padding(.horizontal, 16)
                 }
             }
         }
     }
 
-    private func categorySectionHeader(_ category: AppCategory, count: Int) -> some View {
+    // MARK: - POPOS section
+
+    @ViewBuilder
+    private var poposSection: some View {
+        if router.activeCategories.contains(.popos) && !vm.filteredPOPOS.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                if router.activeCategories.count > 1 {
+                    sectionHeader(.popos, count: vm.filteredPOPOS.count)
+                }
+                ForEach(Array(vm.filteredPOPOS.enumerated()), id: \.element.id) { idx, place in
+                    Button { selectedPOPOS = place } label: {
+                        POPOSPlaceRowView(place: place, index: idx + 1)
+                            .padding(.horizontal, 16)
+                    }
+                    .buttonStyle(.plain)
+                    Divider().background(Color.appHairline).padding(.horizontal, 16)
+                }
+            }
+        }
+    }
+
+    // MARK: - Park section
+
+    @ViewBuilder
+    private var parkSection: some View {
+        if router.activeCategories.contains(.park) && !vm.filteredParks.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                if router.activeCategories.count > 1 {
+                    sectionHeader(.park, count: vm.filteredParks.count)
+                }
+                ForEach(Array(vm.filteredParks.enumerated()), id: \.element.id) { idx, place in
+                    Button { selectedPark = place } label: {
+                        ParkPlaceRowView(place: place, index: idx + 1)
+                            .padding(.horizontal, 16)
+                    }
+                    .buttonStyle(.plain)
+                    Divider().background(Color.appHairline).padding(.horizontal, 16)
+                }
+            }
+        }
+    }
+
+    // MARK: - Section header
+
+    private func sectionHeader(_ category: AppCategory, count: Int) -> some View {
         HStack(alignment: .center, spacing: 8) {
-            Circle()
-                .fill(category.color)
-                .frame(width: 8, height: 8)
+            Circle().fill(category.color).frame(width: 8, height: 8)
             Text(category.displayName)
                 .font(.system(size: 22, weight: .medium, design: .serif))
                 .foregroundStyle(Color.appInk)
@@ -127,56 +171,12 @@ struct BrowseListView: View {
                 .foregroundStyle(Color.appInk3)
                 .monospacedDigit()
         }
+        .padding(.horizontal, 20)
+        .padding(.top, 24)
+        .padding(.bottom, 10)
     }
 
-    @ViewBuilder
-    private func rowView(for item: AnyHashable, category: AppCategory, index: Int) -> some View {
-        switch category {
-        case .film:
-            if let loc = item.base as? FilmLocation {
-                Button {
-                    let entry = FilmEntry(
-                        id: loc.title + loc.releaseYear,
-                        title: loc.title,
-                        releaseYear: loc.releaseYear,
-                        locations: vm.filteredFilm.filter { $0.title == loc.title && $0.releaseYear == loc.releaseYear }
-                    )
-                    selectedFilmEntry = entry
-                } label: {
-                    FilmPlaceRowView(location: loc, index: index)
-                }
-                .buttonStyle(.plain)
-            }
-        case .popos:
-            if let place = item.base as? POPOSPlace {
-                Button { selectedPOPOS = place } label: {
-                    POPOSPlaceRowView(place: place, index: index)
-                }
-                .buttonStyle(.plain)
-                .sheet(item: $selectedPOPOS) { p in
-                    POPOSDetailView(place: p)
-                }
-            }
-        case .park:
-            if let place = item.base as? ParkPlace {
-                Button { selectedPark = place } label: {
-                    ParkPlaceRowView(place: place, index: index)
-                }
-                .buttonStyle(.plain)
-                .sheet(item: $selectedPark) { p in
-                    ParkDetailView(place: p, polygon: nil)
-                }
-            }
-        }
-    }
-
-    private func itemsForCategory(_ category: AppCategory) -> [AnyHashable] {
-        switch category {
-        case .film:  return vm.filteredFilm.map { AnyHashable($0) }
-        case .popos: return vm.filteredPOPOS.map { AnyHashable($0) }
-        case .park:  return vm.filteredParks.map { AnyHashable($0) }
-        }
-    }
+    // MARK: - Empty state
 
     private var emptyState: some View {
         VStack(spacing: 14) {
