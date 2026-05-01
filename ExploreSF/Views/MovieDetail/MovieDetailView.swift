@@ -37,6 +37,13 @@ struct MovieDetailView: View {
         }
         .navigationTitle(viewModel.displayTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if let first = viewModel.entry.locations.first {
+                ToolbarItem(placement: .primaryAction) {
+                    BookmarkButton(pin: PlacePin(from: first))
+                }
+            }
+        }
         .task { await viewModel.loadDetails() }
     }
 }

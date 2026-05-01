@@ -37,6 +37,9 @@ struct POPOSDetailView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
                 }
+                ToolbarItem(placement: .primaryAction) {
+                    BookmarkButton(pin: PlacePin(from: place))
+                }
             }
         }
         .task { await vm.loadData() }
