@@ -55,4 +55,3 @@ struct POPOSDetailView: View {
     }
 }
 
-extension POPOSPlace: Identifiable {}

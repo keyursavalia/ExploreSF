@@ -57,4 +57,3 @@ struct ParkDetailView: View {
     }
 }
 
-extension ParkPlace: Identifiable {}
