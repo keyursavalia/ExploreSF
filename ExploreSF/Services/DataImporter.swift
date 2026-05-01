@@ -8,6 +8,7 @@ class DataImporter {
         importFilmLocationsIfNeeded(modelContext: modelContext)
         importPOPOSIfNeeded(modelContext: modelContext)
         importParksIfNeeded(modelContext: modelContext)
+        importArtIfNeeded(modelContext: modelContext)
     }
 
     private static func importFilmLocationsIfNeeded(modelContext: ModelContext) {
