@@ -43,4 +43,13 @@ extension PlacePin {
         self.latitude     = park.latitude
         self.longitude    = park.longitude
     }
+
+    init(from art: ArtPlace) {
+        self.id           = art.id
+        self.category     = .art
+        self.displayName  = art.title
+        self.locationName = art.locationName
+        self.latitude     = art.latitude
+        self.longitude    = art.longitude
+    }
 }
