@@ -4,6 +4,7 @@ enum AppCategory: String, CaseIterable, Identifiable, Hashable, Codable {
     case film  = "film"
     case popos = "popos"
     case park  = "park"
+    case art   = "art"
 
     var id: String { rawValue }
 
@@ -12,6 +13,7 @@ enum AppCategory: String, CaseIterable, Identifiable, Hashable, Codable {
         case .film:  return "Film Locations"
         case .popos: return "Public Open Spaces"
         case .park:  return "Parks & Recreation"
+        case .art:   return "Public Art"
         }
     }
 
@@ -20,14 +22,7 @@ enum AppCategory: String, CaseIterable, Identifiable, Hashable, Codable {
         case .film:  return "Where the camera rolled"
         case .popos: return "Plazas, atriums & hidden gardens"
         case .park:  return "Open spaces and nature"
-        }
-    }
-
-    var itemCount: String {
-        switch self {
-        case .film:  return "299 locations"
-        case .popos: return "81 spaces"
-        case .park:  return "220 properties"
+        case .art:   return "Sculptures, murals & installations"
         }
     }
 
@@ -36,6 +31,7 @@ enum AppCategory: String, CaseIterable, Identifiable, Hashable, Codable {
         case .film:  return Color(red: 196/255, green: 90/255,  blue: 44/255)   // terracotta
         case .popos: return Color(red: 74/255,  green: 127/255, blue: 160/255)  // SF bay slate
         case .park:  return Color(red: 92/255,  green: 126/255, blue: 54/255)   // botanical green
+        case .art:   return Color(red: 130/255, green: 85/255,  blue: 160/255)  // warm violet
         }
     }
 
@@ -44,6 +40,7 @@ enum AppCategory: String, CaseIterable, Identifiable, Hashable, Codable {
         case .film:  return "film"
         case .popos: return "building.columns"
         case .park:  return "tree"
+        case .art:   return "photo.artframe"
         }
     }
 }
