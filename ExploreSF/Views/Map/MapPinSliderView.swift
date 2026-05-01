@@ -26,6 +26,12 @@ struct MapPinSliderView: View {
                     } else {
                         ProgressView()
                     }
+                case .art:
+                    if let place = mapViewModel.artPlace(for: pin) {
+                        ArtPinSliderContentView(place: place, pin: pin)
+                    } else {
+                        ProgressView()
+                    }
                 }
             }
             .navigationTitle(pin.displayName)
@@ -33,6 +39,9 @@ struct MapPinSliderView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    BookmarkButton(pin: pin)
                 }
             }
         }
