@@ -2,18 +2,33 @@ import Foundation
 import Observation
 
 enum AppTab: Int {
-    case map  = 0
-    case list = 1
+    case map        = 0
+    case categories = 1
+    case saved      = 2
 }
 
 @MainActor
 @Observable
 final class AppRouter {
+    var hasCompletedOnboarding: Bool = false
+    var activeCategories: Set<AppCategory> = []
     var selectedTab: AppTab = .map
-    var pendingLocation: FilmLocation? = nil
+    var pendingPin: PlacePin? = nil
 
-    func navigate(to location: FilmLocation) {
-        pendingLocation = location
-        selectedTab     = .map
+    var isReadyForMap: Bool {
+        hasCompletedOnboarding && !activeCategories.isEmpty
+    }
+
+    func completeOnboarding() {
+        hasCompletedOnboarding = true
+    }
+
+    func applyCategories(_ categories: Set<AppCategory>) {
+        activeCategories = categories
+    }
+
+    func navigateTo(pin: PlacePin) {
+        pendingPin   = pin
+        selectedTab  = .map
     }
 }
