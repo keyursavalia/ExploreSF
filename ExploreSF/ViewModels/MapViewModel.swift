@@ -5,18 +5,53 @@ import Observation
 @MainActor
 @Observable
 final class MapViewModel {
-    var locations:            [FilmLocation]      = []
-    var searchText:           String              = ""
-    var filterState:          FilterState         = FilterState()
-    var actorFilteredTitles:  Set<String>?        = nil
-    var isLoadingActorFilter: Bool                = false
-    var selectedLocation:     FilmLocation?       = nil
+    // Raw data per category
+    var filmLocations:  [FilmLocation]  = []
+    var poposPlaces:    [POPOSPlace]    = []
+    var parkPlaces:     [ParkPlace]     = []
+    var parkPolygons:   [ParkPolygon]   = []
 
-    // Emitted when the map should fly to a coordinate (nil after consumed by the view)
+    // Active categories (set by AppRouter after category picker)
+    var activeCategories: Set<AppCategory> = Set(AppCategory.allCases)
+
+    var selectedPin: PlacePin? = nil
     var pendingFlyToCoordinate: CLLocationCoordinate2D? = nil
 
-    var filteredLocations: [FilmLocation] {
-        var result = locations
+    // Film-specific filter state (carried over from original MapViewModel)
+    var searchText:           String       = ""
+    var filterState:          FilterState  = FilterState()
+    var actorFilteredTitles:  Set<String>? = nil
+    var isLoadingActorFilter: Bool         = false
+
+    // MARK: - Computed pins
+
+    var visiblePins: [PlacePin] {
+        var pins: [PlacePin] = []
+
+        if activeCategories.contains(.film) {
+            let filmPins = filteredFilmLocations.map { PlacePin(from: $0) }
+            pins.append(contentsOf: filmPins)
+        }
+        if activeCategories.contains(.popos) {
+            let popopsPins = poposPlaces.map { PlacePin(from: $0) }
+            pins.append(contentsOf: popopsPins)
+        }
+        if activeCategories.contains(.park) {
+            let parkPins = parkPlaces.map { PlacePin(from: $0) }
+            pins.append(contentsOf: parkPins)
+        }
+        return pins
+    }
+
+    var visiblePolygons: [ParkPolygon] {
+        guard activeCategories.contains(.park) else { return [] }
+        return parkPolygons
+    }
+
+    // MARK: - Film filtering
+
+    var filteredFilmLocations: [FilmLocation] {
+        var result = filmLocations
         let q = searchText.trimmingCharacters(in: .whitespaces).lowercased()
         if !q.isEmpty {
             result = result.filter {
@@ -37,20 +72,46 @@ final class MapViewModel {
     }
 
     var availableYears: [String] {
-        Array(Set(locations.map(\.releaseYear)).filter { $0 != "Unknown" }).sorted().reversed()
+        Array(Set(filmLocations.map(\.releaseYear)).filter { $0 != "Unknown" }).sorted().reversed()
     }
 
     var availableNeighborhoods: [String] {
-        Array(Set(locations.map(\.locationName)).filter { $0 != "N/A" }).sorted()
+        Array(Set(filmLocations.map(\.locationName)).filter { $0 != "N/A" }).sorted()
     }
 
-    func loadLocations(_ locations: [FilmLocation]) {
-        self.locations = locations
+    // MARK: - Data loading
+
+    func loadFilmLocations(_ locations: [FilmLocation]) {
+        self.filmLocations = locations
     }
 
-    func filmEntry(for location: FilmLocation) -> FilmEntry {
+    func loadPOPOSPlaces(_ places: [POPOSPlace]) {
+        self.poposPlaces = places
+    }
+
+    func loadParkPlaces(_ places: [ParkPlace], polygons: [ParkPolygon]) {
+        self.parkPlaces   = places
+        self.parkPolygons = polygons
+    }
+
+    // MARK: - Navigation
+
+    func navigateTo(_ pin: PlacePin) {
+        pendingFlyToCoordinate = pin.coordinate
+        selectedPin = pin
+    }
+
+    func navigateToFilmLocation(_ location: FilmLocation) {
+        navigateTo(PlacePin(from: location))
+    }
+
+    // MARK: - Film entry lookup (for bottom slider)
+
+    func filmEntry(for pin: PlacePin) -> FilmEntry? {
+        guard pin.category == .film,
+              let location = filmLocations.first(where: { $0.id == pin.id }) else { return nil }
         let key      = location.title + location.releaseYear
-        let matching = filteredLocations.filter { $0.title + $0.releaseYear == key }
+        let matching = filteredFilmLocations.filter { $0.title + $0.releaseYear == key }
         return FilmEntry(
             id: key,
             title: location.title,
@@ -59,13 +120,17 @@ final class MapViewModel {
         )
     }
 
-    func navigateTo(_ location: FilmLocation) {
-        pendingFlyToCoordinate = CLLocationCoordinate2D(
-            latitude:  location.latitude,
-            longitude: location.longitude
-        )
-        selectedLocation = location
+    func poposPlace(for pin: PlacePin) -> POPOSPlace? {
+        guard pin.category == .popos else { return nil }
+        return poposPlaces.first { $0.id == pin.id }
     }
+
+    func parkPlace(for pin: PlacePin) -> ParkPlace? {
+        guard pin.category == .park else { return nil }
+        return parkPlaces.first { $0.id == pin.id }
+    }
+
+    // MARK: - Actor filter
 
     func applyActorFilter(name: String) async {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
