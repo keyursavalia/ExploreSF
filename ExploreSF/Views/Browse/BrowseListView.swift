@@ -96,16 +96,11 @@ struct BrowseListView: View {
                 if router.activeCategories.count > 1 {
                     sectionHeader(.film, count: vm.filteredFilm.count)
                 }
-                ForEach(Array(vm.filteredFilm.enumerated()), id: \.element.id) { idx, loc in
+                ForEach(Array(vm.filteredFilm.enumerated()), id: \.element.id) { idx, entry in
                     Button {
-                        selectedFilmEntry = FilmEntry(
-                            id: loc.title + loc.releaseYear,
-                            title: loc.title,
-                            releaseYear: loc.releaseYear,
-                            locations: vm.filteredFilm.filter { $0.title == loc.title && $0.releaseYear == loc.releaseYear }
-                        )
+                        selectedFilmEntry = entry
                     } label: {
-                        FilmPlaceRowView(location: loc, index: idx + 1)
+                        FilmPlaceRowView(location: entry.locations[0], index: idx + 1)
                             .padding(.horizontal, 16)
                     }
                     .buttonStyle(.plain)
