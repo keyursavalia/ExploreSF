@@ -16,8 +16,8 @@ struct FilmPinSliderContentView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 headerRow
-                if let scene = vm.lookAroundScene { lookAroundView(scene: scene) }
-                if let entry = filmEntry { filmDetailLink(entry: entry) }
+                if let scene = vm.lookAroundScene { lookAroundView(scene) }
+                if let entry = filmEntry { filmDetailLink(entry) }
                 directionsButton
             }
             .padding(.horizontal, 20)
