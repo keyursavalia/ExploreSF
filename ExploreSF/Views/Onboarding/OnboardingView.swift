@@ -6,14 +6,21 @@ struct OnboardingView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ScrollView {
-                OnboardingPanelView(panel: OnboardingPanel.all[vm.currentPage])
-                    .padding(.horizontal, 24)
-                    .padding(.top, 18)
-                    .id(vm.currentPage)
-                    .transition(.opacity.combined(with: .move(edge: .trailing)))
-                    .animation(.easeInOut(duration: 0.3), value: vm.currentPage)
+            TabView(selection: Binding(
+                get: { vm.currentPage },
+                set: { vm.currentPage = $0 }
+            )) {
+                ForEach(0..<OnboardingPanel.all.count, id: \.self) { i in
+                    ScrollView {
+                        OnboardingPanelView(panel: OnboardingPanel.all[i])
+                            .padding(.horizontal, 24)
+                            .padding(.top, 18)
+                    }
+                    .tag(i)
+                }
             }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .animation(.easeInOut(duration: 0.3), value: vm.currentPage)
 
             progressDots
                 .padding(.vertical, 12)
