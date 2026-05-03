@@ -73,26 +73,6 @@ struct CategoryPickerView: View {
                             )
                         }
                     }
-
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Coming soon")
-                            .eyebrowStyle()
-                            .padding(.top, 28)
-                        HStack(spacing: 8) {
-                            ForEach(["Museums", "Landmarks", "Viewpoints", "Food & Drink"], id: \.self) { label in
-                                Text(label)
-                                    .font(.system(size: 13))
-                                    .italic()
-                                    .foregroundStyle(Color.appInk3)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.appPaper2)
-                                    .clipShape(Capsule())
-                                    .opacity(0.55)
-                            }
-                        }
-                        .flexWrap()
-                    }
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 70)
@@ -120,10 +100,3 @@ struct CategoryPickerView: View {
     }
 }
 
-// MARK: - Flex wrap helper for "coming soon" chips
-
-private extension View {
-    func flexWrap() -> some View {
-        self.fixedSize(horizontal: false, vertical: true)
-    }
-}
