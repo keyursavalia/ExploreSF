@@ -10,6 +10,7 @@ struct CategoryCardView: View {
         case .film:  return "Movie & TV locations"
         case .popos: return "Public open spaces"
         case .park:  return "Rec & Parks properties"
+        case .art:   return "Public Arts"
         }
     }
 
