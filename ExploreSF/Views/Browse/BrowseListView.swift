@@ -15,19 +15,25 @@ struct BrowseListView: View {
 
     @Environment(AppRouter.self) private var router
 
-    // Ordered categories that are active AND have results
+    // Active categories that have a browse section (film/popos/park — art has no row view yet).
+    // Drives accordion mode independently of whether data has loaded.
+    private var browseableActiveCategories: [AppCategory] {
+        [AppCategory.film, .popos, .park].filter { router.activeCategories.contains($0) }
+    }
+
+    // Same as above, narrowed to categories that also have results — used for expandedCategory tracking.
     private var sectionsToShow: [AppCategory] {
-        [AppCategory.film, .popos, .park].filter { cat in
+        browseableActiveCategories.filter { cat in
             switch cat {
-            case .film:  return router.activeCategories.contains(.film)  && !vm.filteredFilm.isEmpty
-            case .popos: return router.activeCategories.contains(.popos) && !vm.filteredPOPOS.isEmpty
-            case .park:  return router.activeCategories.contains(.park)  && !vm.filteredParks.isEmpty
+            case .film:  return !vm.filteredFilm.isEmpty
+            case .popos: return !vm.filteredPOPOS.isEmpty
+            case .park:  return !vm.filteredParks.isEmpty
             default:     return false
             }
         }
     }
 
-    private var isMultiCategory: Bool { sectionsToShow.count > 1 }
+    private var isMultiCategory: Bool { browseableActiveCategories.count > 1 }
 
     private func isExpanded(_ category: AppCategory) -> Bool {
         !isMultiCategory || expandedCategory == category
@@ -80,22 +86,19 @@ struct BrowseListView: View {
         .onChange(of: router.activeCategories, initial: true) { _, cats in
             vm.activeCategories = cats
             if let current = expandedCategory, !cats.contains(current) {
-                expandedCategory = firstSection(in: cats)
+                expandedCategory = firstBrowseableSection(in: cats)
             } else if expandedCategory == nil {
-                expandedCategory = firstSection(in: cats)
+                expandedCategory = firstBrowseableSection(in: cats)
             }
         }
-        // When results load and only one section has data, make sure expandedCategory is set
+        // When results load in, make sure expandedCategory is set to a valid section
         .onChange(of: sectionsToShow) { _, sections in
-            if let current = expandedCategory, !sections.contains(current) {
-                expandedCategory = sections.first
-            } else if expandedCategory == nil {
-                expandedCategory = sections.first
-            }
+            guard expandedCategory == nil else { return }
+            expandedCategory = sections.first
         }
     }
 
-    private func firstSection(in cats: Set<AppCategory>) -> AppCategory? {
+    private func firstBrowseableSection(in cats: Set<AppCategory>) -> AppCategory? {
         [AppCategory.film, .popos, .park].first { cats.contains($0) }
     }
 
