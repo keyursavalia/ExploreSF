@@ -28,29 +28,17 @@ final class MapViewModel {
 
     var visiblePins: [PlacePin] {
         var pins: [PlacePin] = []
-
-        if activeCategories.contains(.film) {
-            let filmPins = filteredFilmLocations.map { PlacePin(from: $0) }
-            pins.append(contentsOf: filmPins)
-        }
-        if activeCategories.contains(.popos) {
-            let popopsPins = poposPlaces.map { PlacePin(from: $0) }
-            pins.append(contentsOf: popopsPins)
-        }
-        if activeCategories.contains(.park) {
-            let parkPins = parkPlaces.map { PlacePin(from: $0) }
-            pins.append(contentsOf: parkPins)
-        }
-        if activeCategories.contains(.art) {
-            let artPins = artPlaces.map { PlacePin(from: $0) }
-            pins.append(contentsOf: artPins)
-        }
+        if activeCategories.contains(.film)  { pins.append(contentsOf: filteredFilmLocations.map  { PlacePin(from: $0) }) }
+        if activeCategories.contains(.popos) { pins.append(contentsOf: filteredPOPOSPlaces.map    { PlacePin(from: $0) }) }
+        if activeCategories.contains(.park)  { pins.append(contentsOf: filteredParkPlaces.map     { PlacePin(from: $0) }) }
+        if activeCategories.contains(.art)   { pins.append(contentsOf: filteredArtPlaces.map      { PlacePin(from: $0) }) }
         return pins
     }
 
     var visiblePolygons: [ParkPolygon] {
         guard activeCategories.contains(.park) else { return [] }
-        return parkPolygons
+        let visibleIDs = Set(filteredParkPlaces.map(\.id))
+        return parkPolygons.filter { visibleIDs.contains($0.id) }
     }
 
     // MARK: - Film filtering
@@ -76,12 +64,105 @@ final class MapViewModel {
         return result
     }
 
+    // MARK: - POPOS filtering
+
+    var filteredPOPOSPlaces: [POPOSPlace] {
+        var result = poposPlaces
+        let q = searchText.trimmingCharacters(in: .whitespaces).lowercased()
+        if !q.isEmpty {
+            result = result.filter {
+                $0.name.lowercased().contains(q) || $0.address.lowercased().contains(q)
+            }
+        }
+        if let type = filterState.poposSpaceType {
+            result = result.filter { $0.spaceType == type }
+        }
+        if let feature = filterState.poposFeature {
+            result = result.filter { place in
+                switch feature {
+                case "Indoor":    return place.isIndoor
+                case "Food":      return place.hasFood
+                case "Art":       return place.hasArt
+                case "Restrooms": return place.hasRestrooms
+                default:          return true
+                }
+            }
+        }
+        return result
+    }
+
+    // MARK: - Park filtering
+
+    var filteredParkPlaces: [ParkPlace] {
+        var result = parkPlaces
+        let q = searchText.trimmingCharacters(in: .whitespaces).lowercased()
+        if !q.isEmpty {
+            result = result.filter {
+                $0.name.lowercased().contains(q) || $0.address.lowercased().contains(q)
+            }
+        }
+        if let hood = filterState.parkNeighborhood {
+            result = result.filter { $0.neighborhood == hood }
+        }
+        if let type = filterState.parkType {
+            result = result.filter { $0.propertyType == type }
+        }
+        return result
+    }
+
+    // MARK: - Art filtering
+
+    var filteredArtPlaces: [ArtPlace] {
+        var result = artPlaces
+        let q = searchText.trimmingCharacters(in: .whitespaces).lowercased()
+        if !q.isEmpty {
+            result = result.filter {
+                $0.title.lowercased().contains(q) || $0.locationName.lowercased().contains(q)
+            }
+        }
+        if let type = filterState.artType {
+            result = result.filter { $0.artType == type }
+        }
+        if let medium = filterState.artMedium {
+            result = result.filter { $0.medium == medium }
+        }
+        return result
+    }
+
+    // MARK: - Available filter values (Film)
+
     var availableYears: [String] {
         Array(Set(filmLocations.map(\.releaseYear)).filter { $0 != "Unknown" }).sorted().reversed()
     }
 
     var availableNeighborhoods: [String] {
         Array(Set(filmLocations.map(\.locationName)).filter { $0 != "N/A" }).sorted()
+    }
+
+    // MARK: - Available filter values (Park)
+
+    var availableParkNeighborhoods: [String] {
+        Array(Set(parkPlaces.map(\.neighborhood)).filter { !$0.isEmpty }).sorted()
+    }
+
+    var availableParkTypes: [String] {
+        Array(Set(parkPlaces.map(\.propertyType)).filter { !$0.isEmpty }).sorted()
+    }
+
+    // MARK: - Available filter values (POPOS)
+
+    var availablePOPOSSpaceTypes: [String] {
+        Array(Set(poposPlaces.map(\.spaceType)).filter { !$0.isEmpty }).sorted()
+    }
+
+    // MARK: - Available filter values (Art)
+
+    var availableArtTypes: [String] {
+        Array(Set(artPlaces.map(\.artType)).filter { !$0.isEmpty }).sorted()
+    }
+
+    var availableArtMediums: [String] {
+        Array(Set(artPlaces.map(\.medium)).filter { !$0.isEmpty }).sorted()
     }
 
     // MARK: - Data loading
