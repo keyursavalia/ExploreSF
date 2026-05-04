@@ -13,7 +13,7 @@ struct BookmarkButton: View {
         Button(action: toggle) {
             Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
                 .font(.system(size: 17, weight: .medium))
-                .foregroundStyle(isSaved ? Color.appAccent : Color.appInk3)
+                .foregroundStyle(isSaved ? pin.category.color : Color.appInk3)
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
         }
