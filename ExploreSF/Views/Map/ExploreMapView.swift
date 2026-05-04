@@ -39,12 +39,17 @@ struct ExploreMapView: View {
             .ignoresSafeArea()
 
             MapControlsView(
-                searchText:             $vm.searchText,
-                filterState:            $vm.filterState,
-                activeCategories:       router.activeCategories,
-                availableNeighborhoods: viewModel.availableNeighborhoods,
-                availableYears:         viewModel.availableYears,
-                onActorSelected:        { name in await viewModel.applyActorFilter(name: name) }
+                searchText:                $vm.searchText,
+                filterState:               $vm.filterState,
+                activeCategories:          router.activeCategories,
+                availableNeighborhoods:    viewModel.availableNeighborhoods,
+                availableYears:            viewModel.availableYears,
+                availableParkNeighborhoods: viewModel.availableParkNeighborhoods,
+                availableParkTypes:        viewModel.availableParkTypes,
+                availablePOPOSSpaceTypes:  viewModel.availablePOPOSSpaceTypes,
+                availableArtTypes:         viewModel.availableArtTypes,
+                availableArtMediums:       viewModel.availableArtMediums,
+                onActorSelected:           { name in await viewModel.applyActorFilter(name: name) }
             )
 
             // Floating category toggle — bottom of map, above tab bar
