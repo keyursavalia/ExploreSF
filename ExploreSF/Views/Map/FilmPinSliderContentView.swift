@@ -9,7 +9,7 @@ struct FilmPinSliderContentView: View {
     init(pin: PlacePin, filmEntry: FilmEntry?) {
         self.pin       = pin
         self.filmEntry = filmEntry
-        self._vm       = State(wrappedValue: MapPinSliderViewModel(pin: pin))
+        self._vm       = State(wrappedValue: MapPinSliderViewModel(pin: pin, releaseYear: filmEntry?.releaseYear ?? ""))
     }
 
     var body: some View {
