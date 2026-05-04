@@ -9,7 +9,7 @@ func loadArtData() -> [ArtFeature] {
     do {
         let decoder = JSONDecoder()
         let response = try decoder.decode(ArtFeatureCollection.self, from: data)
-        return response.features.filter { $0.geometry.coordinates.count == 2 }
+        return response.features.filter { ($0.geometry?.coordinates.count ?? 0) == 2 }
     } catch {
         print("Error parsing Public Art GeoJSON: \(error)")
         return []
