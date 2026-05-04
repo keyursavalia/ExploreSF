@@ -86,14 +86,11 @@ struct ParkPinSliderContentView: View {
         Button(action: vm.openInMaps) {
             Label("Get Directions", systemImage: "arrow.triangle.turn.up.right.circle.fill")
                 .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(Color.appInk)
+                .foregroundStyle(Color.appPaper)
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
-                .background(Color.appCard)
+                .background(AppCategory.park.color)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12).stroke(Color.appCardEdge, lineWidth: 1)
-                )
         }
     }
 }
