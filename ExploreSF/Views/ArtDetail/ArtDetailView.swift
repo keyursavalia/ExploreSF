@@ -131,7 +131,7 @@ struct ArtDetailView: View {
                 .foregroundStyle(Color.appPaper)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
-                .background(Color.appInk)
+                .background(AppCategory.art.color)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
         }
     }
