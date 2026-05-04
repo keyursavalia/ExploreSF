@@ -13,8 +13,11 @@ final class MapPinSliderViewModel {
     var isLookAroundAvailable:   Bool = false
     var isLoadingTMDB:           Bool = false
 
-    init(pin: PlacePin) {
-        self.pin = pin
+    private let releaseYear: String
+
+    init(pin: PlacePin, releaseYear: String = "") {
+        self.pin         = pin
+        self.releaseYear = releaseYear
     }
 
     func loadData() async {
@@ -30,12 +33,12 @@ final class MapPinSliderViewModel {
     }
 
     private func fetchTMDB() async {
-        isLoadingTMDB   = true
+        isLoadingTMDB    = true
         filmSearchResult = await TMDBService.shared.search(
             title: pin.displayName,
-            year: ""
+            year:  releaseYear
         )
-        isLoadingTMDB   = false
+        isLoadingTMDB    = false
     }
 
     private func checkLookAround() async {
