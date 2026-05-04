@@ -41,6 +41,7 @@ struct ExploreMapView: View {
             MapControlsView(
                 searchText:             $vm.searchText,
                 filterState:            $vm.filterState,
+                activeCategories:       router.activeCategories,
                 availableNeighborhoods: viewModel.availableNeighborhoods,
                 availableYears:         viewModel.availableYears,
                 onActorSelected:        { name in await viewModel.applyActorFilter(name: name) }
@@ -77,8 +78,9 @@ struct ExploreMapView: View {
         .onChange(of: allArt, initial: true) { _, new in
             viewModel.loadArtPlaces(new.map(ArtPlace.init))
         }
-        .onChange(of: router.activeCategories, initial: true) { _, cats in
+        .onChange(of: router.activeCategories, initial: true) { old, cats in
             viewModel.activeCategories = cats
+            if old != cats { viewModel.resetFilters() }
         }
         .onChange(of: router.pendingPin) { _, pending in
             guard let pin = pending else { return }
