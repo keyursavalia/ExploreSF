@@ -3,7 +3,6 @@ import SwiftUI
 struct BrowseListHeaderView: View {
     let activeCategories: Set<AppCategory>
     let totalCount: Int
-    let onChangeCategoriesTap: () -> Void
 
     private var titleText: String {
         if activeCategories.count == 1, let cat = activeCategories.first {
@@ -32,18 +31,13 @@ struct BrowseListHeaderView: View {
                     .padding(.top, 4)
             }
 
-            Button(action: onChangeCategoriesTap) {
-                HStack(spacing: 6) {
-                    Rectangle()
-                        .fill(Color.appInk3)
-                        .frame(width: 16, height: 1)
-                    Text("\(activeCategories.count) \(activeCategories.count == 1 ? "category" : "categories") active · change")
-                        .font(.system(size: 13))
-                        .foregroundStyle(Color.appInk3)
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 10))
-                        .foregroundStyle(Color.appInk3)
-                }
+            HStack(spacing: 4) {
+                Rectangle()
+                    .fill(Color.appInk3)
+                    .frame(width: 16, height: 1)
+                Text("\(activeCategories.count) \(activeCategories.count == 1 ? "category" : "categories") active")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.appInk3)
             }
             .padding(.top, 6)
         }
