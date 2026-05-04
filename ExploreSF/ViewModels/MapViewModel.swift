@@ -120,7 +120,7 @@ final class MapViewModel {
         guard pin.category == .film,
               let location = filmLocations.first(where: { $0.id == pin.id }) else { return nil }
         let key      = location.title + location.releaseYear
-        let matching = filteredFilmLocations.filter { $0.title + $0.releaseYear == key }
+        let matching = filmLocations.filter { $0.title + $0.releaseYear == key }
         return FilmEntry(
             id: key,
             title: location.title,
@@ -157,5 +157,11 @@ final class MapViewModel {
     func removeFilter(_ key: FilterState.FilterKey) {
         if key == .actor { actorFilteredTitles = nil }
         filterState.remove(key)
+    }
+
+    func resetFilters() {
+        searchText          = ""
+        filterState         = FilterState()
+        actorFilteredTitles = nil
     }
 }
