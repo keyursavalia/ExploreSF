@@ -41,6 +41,6 @@ struct AppRouterView: View {
                 .tabItem { Label("Saved", systemImage: "bookmark.fill") }
                 .tag(AppTab.saved)
         }
-        .tint(Color.appAccent)
+        .tint(router.activeTint)
     }
 }
