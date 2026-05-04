@@ -59,13 +59,11 @@ struct CategoryToggleBar: View {
                 let on = pending.contains(cat)
                 Button {
                     if on {
-                        // Don't allow deselecting the last one
                         if pending.count > 1 { pending.remove(cat) }
                     } else {
                         pending.insert(cat)
-                        onApply(pending)
                     }
-                    if !on { onApply(pending) }
+                    onApply(pending)
                 } label: {
                     HStack(spacing: 5) {
                         Image(systemName: cat.systemIcon)
