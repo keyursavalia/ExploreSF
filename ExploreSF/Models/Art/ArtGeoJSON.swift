@@ -5,7 +5,7 @@ struct ArtFeatureCollection: Codable {
 }
 
 struct ArtFeature: Codable {
-    let geometry:   ArtGeometry
+    let geometry:   ArtGeometry?   // null geometry appears in the dataset; treat as invalid
     let properties: ArtProperties
 }
 
