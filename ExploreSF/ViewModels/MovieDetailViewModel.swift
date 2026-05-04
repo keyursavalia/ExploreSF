@@ -9,14 +9,14 @@ final class MovieDetailViewModel {
     var searchResult: TMDBSearchResult? = nil
     var detail:       TMDBDetail?       = nil
     var credits:      TMDBCredits?      = nil
-    var isLoading:    Bool              = false
+    var isLoading:    Bool              = true
 
     init(entry: FilmEntry) {
         self.entry = entry
     }
 
     func loadDetails() async {
-        guard !isLoading, searchResult == nil else { return }
+        guard searchResult == nil else { return }
         isLoading = true
 
         let result = await TMDBService.shared.search(title: entry.title, year: entry.releaseYear)
