@@ -9,6 +9,7 @@ func importArtIfNeeded(modelContext: ModelContext) {
 
     let features = loadArtData()
     for feature in features {
+        guard let geo = feature.geometry, geo.coordinates.count == 2 else { continue }
         let props = feature.properties
         let location = ArtLocation(
             id: feature.synthesizedID,
@@ -20,8 +21,8 @@ func importArtIfNeeded(modelContext: ModelContext) {
             accessibility: props.accessibil ?? "",
             descriptionText: props.descriptio ?? "",
             artistLink: props.artistlink ?? "",
-            latitude: feature.geometry.coordinates[1],
-            longitude: feature.geometry.coordinates[0]
+            latitude: geo.coordinates[1],
+            longitude: geo.coordinates[0]
         )
         modelContext.insert(location)
     }
