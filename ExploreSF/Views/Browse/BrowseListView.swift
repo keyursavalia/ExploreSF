@@ -7,15 +7,15 @@ struct BrowseListView: View {
     @Query(sort: \ParkLocation.name)    private var allParks: [ParkLocation]
 
     @State private var vm = BrowseListViewModel()
-    @State private var showCategoryPicker  = false
-    @State private var selectedFilmEntry:  FilmEntry?   = nil
-    @State private var selectedPOPOS:      POPOSPlace?  = nil
-    @State private var selectedPark:       ParkPlace?   = nil
-    @State private var expandedCategory:   AppCategory? = nil
+    @State private var showCategoryPicker = false
+    @State private var selectedFilmEntry: FilmEntry?  = nil
+    @State private var selectedPOPOS:     POPOSPlace? = nil
+    @State private var selectedPark:      ParkPlace?  = nil
+    @State private var expandedCategory:  AppCategory? = nil
 
     @Environment(AppRouter.self) private var router
 
-    // Ordered list of active categories that have results (art has no browse row view yet)
+    // Ordered categories that are active AND have results
     private var sectionsToShow: [AppCategory] {
         [AppCategory.film, .popos, .park].filter { cat in
             switch cat {
@@ -25,6 +25,12 @@ struct BrowseListView: View {
             default:     return false
             }
         }
+    }
+
+    private var isMultiCategory: Bool { sectionsToShow.count > 1 }
+
+    private func isExpanded(_ category: AppCategory) -> Bool {
+        !isMultiCategory || expandedCategory == category
     }
 
     var body: some View {
@@ -73,11 +79,18 @@ struct BrowseListView: View {
         .onChange(of: allParks, initial: true) { _, new in vm.loadParks(new.map(ParkPlace.init)) }
         .onChange(of: router.activeCategories, initial: true) { _, cats in
             vm.activeCategories = cats
-            // Keep expanded section valid; fall back to first available
             if let current = expandedCategory, !cats.contains(current) {
                 expandedCategory = firstSection(in: cats)
             } else if expandedCategory == nil {
                 expandedCategory = firstSection(in: cats)
+            }
+        }
+        // When results load and only one section has data, make sure expandedCategory is set
+        .onChange(of: sectionsToShow) { _, sections in
+            if let current = expandedCategory, !sections.contains(current) {
+                expandedCategory = sections.first
+            } else if expandedCategory == nil {
+                expandedCategory = sections.first
             }
         }
     }
@@ -133,17 +146,13 @@ struct BrowseListView: View {
     @ViewBuilder
     private var filmSection: some View {
         if router.activeCategories.contains(.film) && !vm.filteredFilm.isEmpty {
-            let isMulti   = sectionsToShow.count > 1
-            let isExpanded = !isMulti || expandedCategory == .film
             VStack(alignment: .leading, spacing: 0) {
-                if isMulti {
-                    accordionHeader(.film, count: vm.filteredFilm.count, isExpanded: isExpanded)
+                if isMultiCategory {
+                    accordionHeader(.film, count: vm.filteredFilm.count, isExpanded: isExpanded(.film))
                 }
-                if isExpanded {
+                if isExpanded(.film) {
                     ForEach(Array(vm.filteredFilm.enumerated()), id: \.element.id) { idx, entry in
-                        Button {
-                            selectedFilmEntry = entry
-                        } label: {
+                        Button { selectedFilmEntry = entry } label: {
                             FilmPlaceRowView(
                                 location:  entry.locations[0],
                                 index:     idx + 1,
@@ -165,13 +174,11 @@ struct BrowseListView: View {
     @ViewBuilder
     private var poposSection: some View {
         if router.activeCategories.contains(.popos) && !vm.filteredPOPOS.isEmpty {
-            let isMulti    = sectionsToShow.count > 1
-            let isExpanded = !isMulti || expandedCategory == .popos
             VStack(alignment: .leading, spacing: 0) {
-                if isMulti {
-                    accordionHeader(.popos, count: vm.filteredPOPOS.count, isExpanded: isExpanded)
+                if isMultiCategory {
+                    accordionHeader(.popos, count: vm.filteredPOPOS.count, isExpanded: isExpanded(.popos))
                 }
-                if isExpanded {
+                if isExpanded(.popos) {
                     ForEach(Array(vm.filteredPOPOS.enumerated()), id: \.element.id) { idx, place in
                         Button { selectedPOPOS = place } label: {
                             POPOSPlaceRowView(place: place, index: idx + 1)
@@ -190,13 +197,11 @@ struct BrowseListView: View {
     @ViewBuilder
     private var parkSection: some View {
         if router.activeCategories.contains(.park) && !vm.filteredParks.isEmpty {
-            let isMulti    = sectionsToShow.count > 1
-            let isExpanded = !isMulti || expandedCategory == .park
             VStack(alignment: .leading, spacing: 0) {
-                if isMulti {
-                    accordionHeader(.park, count: vm.filteredParks.count, isExpanded: isExpanded)
+                if isMultiCategory {
+                    accordionHeader(.park, count: vm.filteredParks.count, isExpanded: isExpanded(.park))
                 }
-                if isExpanded {
+                if isExpanded(.park) {
                     ForEach(Array(vm.filteredParks.enumerated()), id: \.element.id) { idx, place in
                         Button { selectedPark = place } label: {
                             ParkPlaceRowView(place: place, index: idx + 1)
