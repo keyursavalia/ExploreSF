@@ -54,7 +54,7 @@ struct ParkDetailView: View {
                 .foregroundStyle(Color.appPaper)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
-                .background(Color.appInk)
+                .background(AppCategory.park.color)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
         }
     }
