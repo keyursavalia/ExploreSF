@@ -1,46 +1,37 @@
 import SwiftUI
 
 struct CategoryPickerView: View {
-    let isFirstRun: Bool
-    let onApply: (Set<AppCategory>) -> Void
-    var onClose: (() -> Void)? = nil
+    let isFirstRun:        Bool
+    let initialCategories: Set<AppCategory>
+    let onApply:           (Set<AppCategory>) -> Void
 
     @State private var vm = CategoryPickerViewModel()
 
+    init(isFirstRun: Bool, initialCategories: Set<AppCategory> = [], onApply: @escaping (Set<AppCategory>) -> Void) {
+        self.isFirstRun        = isFirstRun
+        self.initialCategories = initialCategories
+        self.onApply           = onApply
+    }
+
     private var buttonLabel: String {
         if vm.selected.isEmpty { return "Select at least one" }
-        if vm.selected.count == 1 {
-            return "Show \(vm.selected.first!.displayName) on the map"
+        if isFirstRun {
+            if vm.selected.count == 1 {
+                return "Show \(vm.selected.first!.displayName) on the map"
+            }
+            return "Show \(vm.selected.count) categories on the map"
+        } else {
+            if vm.selected.count == 1 {
+                return "Apply \(vm.selected.first!.displayName)"
+            }
+            return "Apply \(vm.selected.count) categories"
         }
-        return "Show \(vm.selected.count) categories on the map"
     }
 
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    if !isFirstRun, let close = onClose {
-                        Button(action: close) {
-                            HStack(spacing: 6) {
-                                Image(systemName: "xmark")
-                                    .font(.system(size: 14, weight: .medium))
-                                Text("Close")
-                                    .font(.system(size: 13))
-                            }
-                            .foregroundStyle(Color.appInk)
-                            .padding(.horizontal, 12)
-                            .frame(height: 36)
-                            .background(Color.appCard)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.appCardEdge, lineWidth: 1)
-                            )
-                        }
-                        .padding(.bottom, 16)
-                        .padding(.top, 8)
-                    }
-
                     Text(isFirstRun ? "No. 04 — Set up" : "Categories")
                         .eyebrowStyle()
 
@@ -67,9 +58,9 @@ struct CategoryPickerView: View {
                     VStack(spacing: 12) {
                         ForEach(AppCategory.allCases) { category in
                             CategoryCardView(
-                                category: category,
+                                category:   category,
                                 isSelected: vm.isSelected(category),
-                                onTap: { vm.toggle(category) }
+                                onTap:      { vm.toggle(category) }
                             )
                         }
                     }
@@ -97,6 +88,8 @@ struct CategoryPickerView: View {
         }
         .paperBackground()
         .animation(.easeInOut(duration: 0.2), value: vm.selected)
+        .onAppear {
+            if !initialCategories.isEmpty { vm.selected = initialCategories }
+        }
     }
 }
-
