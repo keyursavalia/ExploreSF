@@ -5,20 +5,21 @@ struct BrowseListView: View {
     @Query(sort: \MovieLocation.title)  private var allFilm:  [MovieLocation]
     @Query(sort: \POPOSLocation.name)   private var allPOPOS: [POPOSLocation]
     @Query(sort: \ParkLocation.name)    private var allParks: [ParkLocation]
+    @Query(sort: \ArtLocation.title)    private var allArt:   [ArtLocation]
 
     @State private var vm = BrowseListViewModel()
     @State private var showCategoryPicker = false
     @State private var selectedFilmEntry: FilmEntry?  = nil
     @State private var selectedPOPOS:     POPOSPlace? = nil
     @State private var selectedPark:      ParkPlace?  = nil
+    @State private var selectedArt:       ArtPlace?   = nil
     @State private var expandedCategory:  AppCategory? = nil
 
     @Environment(AppRouter.self) private var router
 
-    // Active categories that have a browse section (film/popos/park — art has no row view yet).
-    // Drives accordion mode independently of whether data has loaded.
+    // Active categories that have a browse section. Drives accordion mode independently of data loading state.
     private var browseableActiveCategories: [AppCategory] {
-        [AppCategory.film, .popos, .park].filter { router.activeCategories.contains($0) }
+        [AppCategory.film, .popos, .park, .art].filter { router.activeCategories.contains($0) }
     }
 
     // Same as above, narrowed to categories that also have results — used for expandedCategory tracking.
@@ -28,7 +29,7 @@ struct BrowseListView: View {
             case .film:  return !vm.filteredFilm.isEmpty
             case .popos: return !vm.filteredPOPOS.isEmpty
             case .park:  return !vm.filteredParks.isEmpty
-            default:     return false
+            case .art:   return !vm.filteredArt.isEmpty
             }
         }
     }
@@ -52,6 +53,7 @@ struct BrowseListView: View {
                         filmSection
                         poposSection
                         parkSection
+                        artSection
                     }
                 }
                 .padding(.bottom, 100)
@@ -80,9 +82,13 @@ struct BrowseListView: View {
         .sheet(item: $selectedPark) { place in
             ParkDetailView(place: place, polygon: nil)
         }
+        .sheet(item: $selectedArt) { place in
+            ArtDetailView(place: place)
+        }
         .onChange(of: allFilm, initial: true)  { _, new in vm.loadFilm(new.map(FilmLocation.init)) }
         .onChange(of: allPOPOS, initial: true) { _, new in vm.loadPOPOS(new.map(POPOSPlace.init)) }
         .onChange(of: allParks, initial: true) { _, new in vm.loadParks(new.map(ParkPlace.init)) }
+        .onChange(of: allArt,   initial: true) { _, new in vm.loadArt(new.map(ArtPlace.init)) }
         .onChange(of: router.activeCategories, initial: true) { _, cats in
             vm.activeCategories = cats
             if let current = expandedCategory, !cats.contains(current) {
@@ -99,7 +105,7 @@ struct BrowseListView: View {
     }
 
     private func firstBrowseableSection(in cats: Set<AppCategory>) -> AppCategory? {
-        [AppCategory.film, .popos, .park].first { cats.contains($0) }
+        [AppCategory.film, .popos, .park, .art].first { cats.contains($0) }
     }
 
     // MARK: - Header
@@ -208,6 +214,29 @@ struct BrowseListView: View {
                     ForEach(Array(vm.filteredParks.enumerated()), id: \.element.id) { idx, place in
                         Button { selectedPark = place } label: {
                             ParkPlaceRowView(place: place, index: idx + 1)
+                                .padding(.horizontal, 16)
+                        }
+                        .buttonStyle(.plain)
+                        Divider().background(Color.appHairline).padding(.horizontal, 16)
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Art section
+
+    @ViewBuilder
+    private var artSection: some View {
+        if router.activeCategories.contains(.art) && !vm.filteredArt.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                if isMultiCategory {
+                    accordionHeader(.art, count: vm.filteredArt.count, isExpanded: isExpanded(.art))
+                }
+                if isExpanded(.art) {
+                    ForEach(Array(vm.filteredArt.enumerated()), id: \.element.id) { idx, place in
+                        Button { selectedArt = place } label: {
+                            ArtPlaceRowView(place: place, index: idx + 1)
                                 .padding(.horizontal, 16)
                         }
                         .buttonStyle(.plain)
