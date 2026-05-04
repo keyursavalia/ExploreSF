@@ -35,7 +35,7 @@ final class AppRouter {
 
     var activeTint: Color {
         activeCategories.count == 1
-            ? (activeCategories.first?.color ?? Color.appAccent)
-            : Color.appAccent
+            ? (activeCategories.first?.color ?? Color.appInk)
+            : Color.appInk
     }
 }
