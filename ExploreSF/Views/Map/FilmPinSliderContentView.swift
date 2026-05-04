@@ -65,7 +65,7 @@ struct FilmPinSliderContentView: View {
                 .foregroundStyle(Color.appPaper)
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
-                .background(Color.appInk)
+                .background(AppCategory.film.color)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
