@@ -52,4 +52,14 @@ extension PlacePin {
         self.latitude     = art.latitude
         self.longitude    = art.longitude
     }
+
+    init(from saved: SavedPlace) {
+        let parts = saved.id.split(separator: ":", maxSplits: 1)
+        self.id           = parts.count > 1 ? String(parts[1]) : saved.id
+        self.category     = saved.category ?? .film
+        self.displayName  = saved.displayName
+        self.locationName = saved.locationName
+        self.latitude     = saved.latitude
+        self.longitude    = saved.longitude
+    }
 }
