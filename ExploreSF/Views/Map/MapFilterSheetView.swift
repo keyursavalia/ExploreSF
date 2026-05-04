@@ -1,25 +1,38 @@
 import SwiftUI
 
 struct MapFilterSheetView: View {
-    let activeCategories:       Set<AppCategory>
-    @Binding var filterState:   FilterState
-    let availableNeighborhoods: [String]
-    let availableYears:         [String]
-    let onActorSelected:        (String) async -> Void
-    let onDismiss:              () -> Void
+    let activeCategories:           Set<AppCategory>
+    @Binding var filterState:       FilterState
+    let availableNeighborhoods:     [String]
+    let availableYears:             [String]
+    let availableParkNeighborhoods: [String]
+    let availableParkTypes:         [String]
+    let availablePOPOSSpaceTypes:   [String]
+    let availableArtTypes:          [String]
+    let availableArtMediums:        [String]
+    let onActorSelected:            (String) async -> Void
+    let onDismiss:                  () -> Void
 
-    @State private var showNeighborhood = false
-    @State private var showYear         = false
-    @State private var showActor        = false
+    @State private var showNeighborhood     = false
+    @State private var showYear             = false
+    @State private var showActor            = false
+    @State private var showParkNeighborhood = false
+    @State private var showParkType         = false
+    @State private var showPOPOSSpaceType   = false
+    @State private var showPOPOSFeature     = false
+    @State private var showArtType          = false
+    @State private var showArtMedium        = false
+
+    private static let poposFeatures = ["Indoor", "Food", "Art", "Restrooms"]
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
                     if activeCategories.contains(.film)  { filmSection }
-                    if activeCategories.contains(.park)  { noFilterSection(.park) }
-                    if activeCategories.contains(.popos) { noFilterSection(.popos) }
-                    if activeCategories.contains(.art)   { noFilterSection(.art) }
+                    if activeCategories.contains(.park)  { parkSection }
+                    if activeCategories.contains(.popos) { poposSection }
+                    if activeCategories.contains(.art)   { artSection }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
@@ -36,50 +49,84 @@ struct MapFilterSheetView: View {
                 if filterState.isActive {
                     ToolbarItem(placement: .primaryAction) {
                         Button("Clear All") { filterState = FilterState() }
-                            .foregroundStyle(AppCategory.film.color)
+                            .foregroundStyle(Color.appAccent)
                     }
                 }
             }
         }
         .sheet(isPresented: $showYear) {
-            FilterPickerSheetView(
-                title: "Release Year", options: availableYears, selected: $filterState.releaseYear
-            )
+            FilterPickerSheetView(title: "Release Year", options: availableYears,           selected: $filterState.releaseYear)
         }
         .sheet(isPresented: $showNeighborhood) {
-            FilterPickerSheetView(
-                title: "Neighborhood", options: availableNeighborhoods, selected: $filterState.neighborhood
-            )
+            FilterPickerSheetView(title: "Neighborhood",  options: availableNeighborhoods,  selected: $filterState.neighborhood)
         }
         .sheet(isPresented: $showActor) {
             ActorFilterSheetView(actorName: $filterState.actorName) { name in
                 Task { await onActorSelected(name) }
             }
         }
+        .sheet(isPresented: $showParkNeighborhood) {
+            FilterPickerSheetView(title: "Neighborhood", options: availableParkNeighborhoods, selected: $filterState.parkNeighborhood)
+        }
+        .sheet(isPresented: $showParkType) {
+            FilterPickerSheetView(title: "Park Type",   options: availableParkTypes,         selected: $filterState.parkType)
+        }
+        .sheet(isPresented: $showPOPOSSpaceType) {
+            FilterPickerSheetView(title: "Space Type",  options: availablePOPOSSpaceTypes,   selected: $filterState.poposSpaceType)
+        }
+        .sheet(isPresented: $showPOPOSFeature) {
+            FilterPickerSheetView(title: "Feature",     options: Self.poposFeatures,         selected: $filterState.poposFeature)
+        }
+        .sheet(isPresented: $showArtType) {
+            FilterPickerSheetView(title: "Art Type",    options: availableArtTypes,          selected: $filterState.artType)
+        }
+        .sheet(isPresented: $showArtMedium) {
+            FilterPickerSheetView(title: "Medium",      options: availableArtMediums,        selected: $filterState.artMedium)
+        }
     }
 
-    // MARK: Film section
+    // MARK: - Film
 
     private var filmSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             sectionHeader(.film)
-            filterRow(title: "Year",         value: filterState.releaseYear,  onTap: { showYear = true },         onClear: { filterState.releaseYear  = nil })
-            filterRow(title: "Neighborhood", value: filterState.neighborhood, onTap: { showNeighborhood = true }, onClear: { filterState.neighborhood = nil })
-            filterRow(title: "Actor",        value: filterState.actorName,    onTap: { showActor = true },        onClear: { filterState.actorName    = nil })
+            filterRow(category: .film, title: "Year",         value: filterState.releaseYear,  onTap: { showYear = true },         onClear: { filterState.releaseYear  = nil })
+            filterRow(category: .film, title: "Neighborhood", value: filterState.neighborhood, onTap: { showNeighborhood = true }, onClear: { filterState.neighborhood = nil })
+            filterRow(category: .film, title: "Actor",        value: filterState.actorName,    onTap: { showActor = true },        onClear: { filterState.actorName    = nil })
         }
     }
 
-    private func noFilterSection(_ category: AppCategory) -> some View {
+    // MARK: - Park
+
+    private var parkSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            sectionHeader(category)
-            Text("Use the search bar to find \(category.displayName.lowercased()) by name.")
-                .font(.appBody)
-                .foregroundStyle(Color.appInk3)
-                .padding(.horizontal, 4)
+            sectionHeader(.park)
+            filterRow(category: .park, title: "Neighborhood", value: filterState.parkNeighborhood, onTap: { showParkNeighborhood = true }, onClear: { filterState.parkNeighborhood = nil })
+            filterRow(category: .park, title: "Park Type",    value: filterState.parkType,         onTap: { showParkType = true },         onClear: { filterState.parkType         = nil })
         }
     }
 
-    // MARK: Helpers
+    // MARK: - POPOS
+
+    private var poposSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader(.popos)
+            filterRow(category: .popos, title: "Space Type", value: filterState.poposSpaceType, onTap: { showPOPOSSpaceType = true }, onClear: { filterState.poposSpaceType = nil })
+            filterRow(category: .popos, title: "Feature",    value: filterState.poposFeature,   onTap: { showPOPOSFeature = true },   onClear: { filterState.poposFeature   = nil })
+        }
+    }
+
+    // MARK: - Art
+
+    private var artSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader(.art)
+            filterRow(category: .art, title: "Art Type", value: filterState.artType,   onTap: { showArtType = true },   onClear: { filterState.artType   = nil })
+            filterRow(category: .art, title: "Medium",   value: filterState.artMedium, onTap: { showArtMedium = true }, onClear: { filterState.artMedium = nil })
+        }
+    }
+
+    // MARK: - Helpers
 
     private func sectionHeader(_ category: AppCategory) -> some View {
         HStack(spacing: 6) {
@@ -90,7 +137,7 @@ struct MapFilterSheetView: View {
         }
     }
 
-    private func filterRow(title: String, value: String?, onTap: @escaping () -> Void, onClear: @escaping () -> Void) -> some View {
+    private func filterRow(category: AppCategory, title: String, value: String?, onTap: @escaping () -> Void, onClear: @escaping () -> Void) -> some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
                 Text(title)
@@ -100,7 +147,7 @@ struct MapFilterSheetView: View {
                 if let value {
                     Text(value)
                         .font(.system(size: 14))
-                        .foregroundStyle(AppCategory.film.color)
+                        .foregroundStyle(category.color)
                         .lineLimit(1)
                     Button(action: onClear) {
                         Image(systemName: "xmark.circle.fill")
