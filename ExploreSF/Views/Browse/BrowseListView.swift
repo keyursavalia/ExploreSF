@@ -19,7 +19,7 @@ struct BrowseListView: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     headerArea
-                    searchBar.padding(.horizontal, 20).padding(.top, 20)
+                    searchRow.padding(.horizontal, 20).padding(.top, 20)
 
                     if vm.totalCount == 0 {
                         emptyState
@@ -61,30 +61,41 @@ struct BrowseListView: View {
     private var headerArea: some View {
         BrowseListHeaderView(
             activeCategories: router.activeCategories,
-            totalCount: vm.totalCount,
-            onChangeCategoriesTap: { showCategoryPicker = true }
+            totalCount: vm.totalCount
         )
         .padding(.horizontal, 20)
         .padding(.top, 8)
     }
 
-    // MARK: - Search
+    // MARK: - Search row (search field + category button)
 
-    private var searchBar: some View {
+    private var searchRow: some View {
         @Bindable var bindVm = vm
-        return HStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 15))
-                .foregroundStyle(Color.appInk3)
-            TextField("Search…", text: $bindVm.searchText)
-                .font(.system(size: 15))
-                .foregroundStyle(Color.appInk)
+        return HStack(spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 15))
+                    .foregroundStyle(Color.appInk3)
+                TextField("Search…", text: $bindVm.searchText)
+                    .font(.system(size: 15))
+                    .foregroundStyle(Color.appInk)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(Color.appCard)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.appCardEdge, lineWidth: 1))
+
+            Button { showCategoryPicker = true } label: {
+                Image(systemName: "line.3.horizontal")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(Color.appInk)
+                    .frame(width: 44, height: 44)
+                    .background(Color.appCard)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.appCardEdge, lineWidth: 1))
+            }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(Color.appCard)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.appCardEdge, lineWidth: 1))
     }
 
     // MARK: - Film section
@@ -100,10 +111,15 @@ struct BrowseListView: View {
                     Button {
                         selectedFilmEntry = entry
                     } label: {
-                        FilmPlaceRowView(location: entry.locations[0], index: idx + 1)
-                            .padding(.horizontal, 16)
+                        FilmPlaceRowView(
+                            location:  entry.locations[0],
+                            index:     idx + 1,
+                            posterURL: vm.posterCache[entry.id]?.posterURL
+                        )
+                        .padding(.horizontal, 16)
                     }
                     .buttonStyle(.plain)
+                    .onAppear { Task { await vm.fetchPosterIfNeeded(for: entry) } }
                     Divider().background(Color.appHairline).padding(.horizontal, 16)
                 }
             }
