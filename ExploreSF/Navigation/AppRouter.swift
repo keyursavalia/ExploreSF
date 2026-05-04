@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import SwiftUI
 
 enum AppTab: Int {
     case map        = 0
@@ -30,5 +31,11 @@ final class AppRouter {
     func navigateTo(pin: PlacePin) {
         pendingPin   = pin
         selectedTab  = .map
+    }
+
+    var activeTint: Color {
+        activeCategories.count == 1
+            ? (activeCategories.first?.color ?? Color.appAccent)
+            : Color.appAccent
     }
 }
