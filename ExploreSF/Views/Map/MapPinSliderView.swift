@@ -45,6 +45,7 @@ struct MapPinSliderView: View {
                 }
             }
         }
+        .tint(pin.category.color)
         .paperBackground()
     }
 }
