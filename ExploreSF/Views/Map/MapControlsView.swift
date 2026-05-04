@@ -3,10 +3,15 @@ import SwiftUI
 struct MapControlsView: View {
     @Binding var searchText:  String
     @Binding var filterState: FilterState
-    let activeCategories:       Set<AppCategory>
-    let availableNeighborhoods: [String]
-    let availableYears:         [String]
-    let onActorSelected:        (String) async -> Void
+    let activeCategories:          Set<AppCategory>
+    let availableNeighborhoods:    [String]
+    let availableYears:            [String]
+    let availableParkNeighborhoods: [String]
+    let availableParkTypes:        [String]
+    let availablePOPOSSpaceTypes:  [String]
+    let availableArtTypes:         [String]
+    let availableArtMediums:       [String]
+    let onActorSelected:           (String) async -> Void
 
     @State private var showFilterSheet = false
 
@@ -40,12 +45,17 @@ struct MapControlsView: View {
         .background(.ultraThinMaterial)
         .sheet(isPresented: $showFilterSheet) {
             MapFilterSheetView(
-                activeCategories:       activeCategories,
-                filterState:            $filterState,
-                availableNeighborhoods: availableNeighborhoods,
-                availableYears:         availableYears,
-                onActorSelected:        onActorSelected,
-                onDismiss:              { showFilterSheet = false }
+                activeCategories:          activeCategories,
+                filterState:               $filterState,
+                availableNeighborhoods:    availableNeighborhoods,
+                availableYears:            availableYears,
+                availableParkNeighborhoods: availableParkNeighborhoods,
+                availableParkTypes:        availableParkTypes,
+                availablePOPOSSpaceTypes:  availablePOPOSSpaceTypes,
+                availableArtTypes:         availableArtTypes,
+                availableArtMediums:       availableArtMediums,
+                onActorSelected:           onActorSelected,
+                onDismiss:                 { showFilterSheet = false }
             )
             .presentationDetents([.medium, .large])
         }
