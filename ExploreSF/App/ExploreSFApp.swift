@@ -3,15 +3,28 @@ import SwiftData
 
 @main
 struct ExploreSFApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([MovieLocation.self, POPOSLocation.self, ParkLocation.self, ArtLocation.self, SavedPlace.self])
+    let sharedModelContainer: ModelContainer
+    @State private var itineraryManager: ItineraryManager
+
+    init() {
+        let schema = Schema([
+            MovieLocation.self,
+            POPOSLocation.self,
+            ParkLocation.self,
+            ArtLocation.self,
+            SavedPlace.self,
+            ItineraryPlan.self,
+            ItineraryStop.self
+        ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {
-            return try ModelContainer(for: schema, configurations: [config])
+            let container = try ModelContainer(for: schema, configurations: [config])
+            sharedModelContainer = container
+            _itineraryManager = State(wrappedValue: ItineraryManager(context: container.mainContext))
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
-    }()
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -19,6 +32,7 @@ struct ExploreSFApp: App {
                 .onAppear {
                     DataImporter.shared(modelContext: sharedModelContainer.mainContext)
                 }
+                .environment(itineraryManager)
         }
         .modelContainer(sharedModelContainer)
     }
