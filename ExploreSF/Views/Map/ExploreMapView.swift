@@ -17,53 +17,55 @@ struct ExploreMapView: View {
     )
     @State private var showCategoryPopover = false
 
-    @Environment(AppRouter.self) private var router
+    @Environment(AppRouter.self)        private var router
+    @Environment(ItineraryManager.self) private var itineraryManager
 
     var body: some View {
         @Bindable var vm = viewModel
 
         ZStack(alignment: .top) {
             Map(position: $cameraPosition, selection: $vm.selectedPin) {
-                ForEach(viewModel.visiblePins) { pin in
-                    pinMarker(for: pin)
-                }
-                ForEach(viewModel.visiblePolygons) { polygon in
-                    ForEach(Array(polygon.rings.enumerated()), id: \.offset) { _, ring in
-                        MapPolygon(coordinates: ring)
-                            .foregroundStyle(AppCategory.park.color.opacity(0.18))
-                            .stroke(AppCategory.park.color.opacity(0.5), lineWidth: 1.5)
-                    }
+                if itineraryManager.isItineraryModeActive, let plan = itineraryManager.activePlan {
+                    itineraryMapContent(plan: plan)
+                } else {
+                    normalMapContent
                 }
             }
             .mapStyle(.standard(elevation: .realistic))
             .ignoresSafeArea()
 
             MapControlsView(
-                searchText:                $vm.searchText,
-                filterState:               $vm.filterState,
-                activeCategories:          router.activeCategories,
-                availableNeighborhoods:    viewModel.availableNeighborhoods,
-                availableYears:            viewModel.availableYears,
+                searchText:                 $vm.searchText,
+                filterState:                $vm.filterState,
+                activeCategories:           router.activeCategories,
+                availableNeighborhoods:     viewModel.availableNeighborhoods,
+                availableYears:             viewModel.availableYears,
                 availableParkNeighborhoods: viewModel.availableParkNeighborhoods,
-                availableParkTypes:        viewModel.availableParkTypes,
-                availablePOPOSSpaceTypes:  viewModel.availablePOPOSSpaceTypes,
-                availableArtTypes:         viewModel.availableArtTypes,
-                availableArtMediums:       viewModel.availableArtMediums,
-                onActorSelected:           { name in await viewModel.applyActorFilter(name: name) }
+                availableParkTypes:         viewModel.availableParkTypes,
+                availablePOPOSSpaceTypes:   viewModel.availablePOPOSSpaceTypes,
+                availableArtTypes:          viewModel.availableArtTypes,
+                availableArtMediums:        viewModel.availableArtMediums,
+                onActorSelected:            { name in await viewModel.applyActorFilter(name: name) }
             )
 
-            // Floating category toggle — bottom of map, above tab bar
             VStack {
                 Spacer()
-                CategoryToggleBar(
-                    activeCategories: router.activeCategories,
-                    isExpanded: $showCategoryPopover,
-                    onApply: { cats in
-                        router.applyCategories(cats)
-                        showCategoryPopover = false
-                    }
-                )
-                .padding(.bottom, 90)
+                if itineraryManager.isItineraryModeActive,
+                   let plan = itineraryManager.activePlan,
+                   plan.totalDays > 1 {
+                    itineraryDayBar(plan: plan)
+                        .padding(.bottom, 100)
+                } else if !itineraryManager.isItineraryModeActive {
+                    CategoryToggleBar(
+                        activeCategories: router.activeCategories,
+                        isExpanded: $showCategoryPopover,
+                        onApply: { cats in
+                            router.applyCategories(cats)
+                            showCategoryPopover = false
+                        }
+                    )
+                    .padding(.bottom, 90)
+                }
             }
         }
         .sheet(item: $vm.selectedPin) { pin in
@@ -100,6 +102,77 @@ struct ExploreMapView: View {
             viewModel.pendingFlyToCoordinate = nil
         }
     }
+
+    // MARK: - Normal map content
+
+    @MapContentBuilder
+    private var normalMapContent: some MapContent {
+        ForEach(viewModel.visiblePins) { pin in
+            pinMarker(for: pin)
+        }
+        ForEach(viewModel.visiblePolygons) { polygon in
+            ForEach(Array(polygon.rings.enumerated()), id: \.offset) { _, ring in
+                MapPolygon(coordinates: ring)
+                    .foregroundStyle(AppCategory.park.color.opacity(0.18))
+                    .stroke(AppCategory.park.color.opacity(0.5), lineWidth: 1.5)
+            }
+        }
+    }
+
+    // MARK: - Itinerary map content
+
+    @MapContentBuilder
+    private func itineraryMapContent(plan: ItineraryPlan) -> some MapContent {
+        let dayStops = plan.orderedStops(for: itineraryManager.selectedDay)
+        let coords   = dayStops.map(\.coordinate)
+
+        if coords.count > 1 {
+            MapPolyline(coordinates: coords)
+                .stroke(Color.appInk.opacity(0.3), style: StrokeStyle(lineWidth: 2, dash: [6, 4]))
+        }
+
+        ForEach(dayStops, id: \.id) { stop in
+            Annotation(stop.displayName, coordinate: stop.coordinate, anchor: .bottom) {
+                ItineraryAnnotationView(
+                    number:      stop.orderInDay + 1,
+                    category:    stop.category ?? .film,
+                    isCompleted: stop.isCompleted
+                )
+            }
+            .tag(stop.asPlacePin)
+        }
+    }
+
+    // MARK: - Itinerary day bar
+
+    private func itineraryDayBar(plan: ItineraryPlan) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(1...plan.totalDays, id: \.self) { day in
+                    let isActive = itineraryManager.selectedDay == day
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            itineraryManager.selectedDay = day
+                        }
+                    } label: {
+                        Text("Day \(day)")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(isActive ? Color.appPaper : Color.appInk)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(isActive ? Color.appInk : .ultraThinMaterial)
+                            .clipShape(Capsule())
+                            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                    }
+                    .buttonStyle(.plain)
+                    .animation(.easeInOut(duration: 0.2), value: isActive)
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+    }
+
+    // MARK: - Normal pin marker
 
     @MapContentBuilder
     private func pinMarker(for pin: PlacePin) -> some MapContent {
