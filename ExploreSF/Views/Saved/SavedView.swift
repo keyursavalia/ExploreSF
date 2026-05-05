@@ -1,13 +1,17 @@
 import SwiftUI
 import SwiftData
 
+private enum SavedTab { case saved, itinerary }
+
 struct SavedView: View {
     @Query(sort: \SavedPlace.savedAt, order: .reverse) private var savedPlaces: [SavedPlace]
     @Environment(\.modelContext) private var modelContext
-    @Environment(AppRouter.self) private var router
+    @Environment(AppRouter.self)        private var router
+    @Environment(ItineraryManager.self) private var itineraryManager
 
     @State private var isSelecting = false
     @State private var selectedIDs = Set<String>()
+    @State private var activeTab:  SavedTab = .saved
 
     private var groupedByCategory: [(AppCategory, [SavedPlace])] {
         let order: [AppCategory] = [.film, .popos, .park, .art]
@@ -19,11 +23,18 @@ struct SavedView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if savedPlaces.isEmpty {
-                    emptyState
+            VStack(spacing: 0) {
+                stickyHeader
+                    .background(Color.appPaper)
+
+                if activeTab == .saved {
+                    if savedPlaces.isEmpty {
+                        emptyState
+                    } else {
+                        savedList
+                    }
                 } else {
-                    list
+                    ItineraryPlanView()
                 }
             }
             .background(Color.appPaper)
@@ -32,16 +43,114 @@ struct SavedView: View {
         }
     }
 
-    // MARK: - List
+    // MARK: - Sticky header
 
-    private var list: some View {
+    private var stickyHeader: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            header
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                .padding(.bottom, 4)
+            tabPicker
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                .padding(.bottom, 8)
+        }
+    }
+
+    // MARK: - Header
+
+    private var header: some View {
+        HStack(alignment: .bottom) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("San Francisco · Saved")
+                    .eyebrowStyle()
+                Group {
+                    if activeTab == .saved {
+                        Text("\(savedPlaces.count) \(savedPlaces.count == 1 ? "place" : "places")")
+                    } else if let plan = itineraryManager.activePlan {
+                        Text("\(plan.stops.count) \(plan.stops.count == 1 ? "stop" : "stops")")
+                    } else {
+                        Text("No plan yet")
+                    }
+                }
+                .font(.system(size: 36, weight: .regular, design: .serif))
+                .italic()
+                .foregroundStyle(Color.appInk)
+                .padding(.top, 4)
+                .animation(.easeInOut(duration: 0.2), value: activeTab == .saved)
+            }
+            Spacer()
+            if activeTab == .saved {
+                savedHeaderActions
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var savedHeaderActions: some View {
+        if !isSelecting {
+            Button("Select") {
+                isSelecting = true
+                selectedIDs.removeAll()
+            }
+            .font(.system(size: 15))
+            .foregroundStyle(Color.appInk3)
+            .padding(.bottom, 4)
+        } else {
+            HStack(spacing: 16) {
+                Button("Cancel") {
+                    isSelecting = false
+                    selectedIDs.removeAll()
+                }
+                .font(.system(size: 15))
+                .foregroundStyle(Color.appInk3)
+
+                if !selectedIDs.isEmpty {
+                    Button("Delete (\(selectedIDs.count))") {
+                        deleteSelected()
+                    }
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(Color.red)
+                }
+            }
+            .padding(.bottom, 4)
+        }
+    }
+
+    // MARK: - Tab picker
+
+    private var tabPicker: some View {
+        HStack(spacing: 0) {
+            tabButton("Saved",     isActive: activeTab == .saved)     { activeTab = .saved }
+            tabButton("Itinerary", isActive: activeTab == .itinerary) { activeTab = .itinerary }
+        }
+        .padding(3)
+        .background(Color.appCardEdge.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func tabButton(_ label: String, isActive: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) { action() }
+        } label: {
+            Text(label)
+                .font(.system(size: 14, weight: isActive ? .semibold : .regular))
+                .foregroundStyle(isActive ? Color.appInk : Color.appInk3)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .background(isActive ? Color.appCard : Color.clear)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .buttonStyle(.plain)
+        .animation(.easeInOut(duration: 0.2), value: isActive)
+    }
+
+    // MARK: - Saved list
+
+    private var savedList: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
-                header
-                    .padding(.horizontal, 20)
-                    .padding(.top, 8)
-                    .padding(.bottom, 4)
-
                 ForEach(groupedByCategory, id: \.0) { category, places in
                     if groupedByCategory.count > 1 {
                         categoryHeader(category, count: places.count)
@@ -55,50 +164,6 @@ struct SavedView: View {
                 }
             }
             .padding(.bottom, 100)
-        }
-    }
-
-    // MARK: - Header
-
-    private var header: some View {
-        HStack(alignment: .bottom) {
-            VStack(alignment: .leading, spacing: 0) {
-                Text("San Francisco · Saved")
-                    .eyebrowStyle()
-                Text("\(savedPlaces.count) \(savedPlaces.count == 1 ? "place" : "places")")
-                    .font(.system(size: 36, weight: .regular, design: .serif))
-                    .italic()
-                    .foregroundStyle(Color.appInk)
-                    .padding(.top, 4)
-            }
-            Spacer()
-            if !isSelecting {
-                Button("Select") {
-                    isSelecting = true
-                    selectedIDs.removeAll()
-                }
-                .font(.system(size: 15))
-                .foregroundStyle(Color.appInk3)
-                .padding(.bottom, 4)
-            } else {
-                HStack(spacing: 16) {
-                    Button("Cancel") {
-                        isSelecting = false
-                        selectedIDs.removeAll()
-                    }
-                    .font(.system(size: 15))
-                    .foregroundStyle(Color.appInk3)
-
-                    if !selectedIDs.isEmpty {
-                        Button("Delete (\(selectedIDs.count))") {
-                            deleteSelected()
-                        }
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(Color.red)
-                    }
-                }
-                .padding(.bottom, 4)
-            }
         }
     }
 
@@ -126,12 +191,12 @@ struct SavedView: View {
     @ViewBuilder
     private func savedRow(_ place: SavedPlace) -> some View {
         let isSelected = selectedIDs.contains(place.id)
-        let category = place.category ?? .film
+        let category   = place.category ?? .film
 
         Button {
             if isSelecting {
                 if isSelected { selectedIDs.remove(place.id) }
-                else { selectedIDs.insert(place.id) }
+                else          { selectedIDs.insert(place.id) }
             } else {
                 router.navigateTo(pin: PlacePin(from: place))
             }
