@@ -17,20 +17,3 @@ struct POPOSPlace: Identifiable, Hashable {
     let longitude: Double
 }
 
-extension POPOSPlace {
-    init(from model: POPOSLocation) {
-        self.id              = model.id
-        self.name            = model.name
-        self.address         = model.address
-        self.hours           = model.hours
-        self.spaceType       = model.spaceType
-        self.descriptionText = model.descriptionText
-        self.hasFood         = model.hasFood
-        self.hasArt          = model.hasArt
-        self.hasRestrooms    = model.hasRestrooms
-        self.isIndoor        = model.isIndoor
-        self.seatingInfo     = model.seatingInfo
-        self.latitude        = model.latitude
-        self.longitude       = model.longitude
-    }
-}
