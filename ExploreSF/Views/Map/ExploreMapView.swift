@@ -146,9 +146,10 @@ struct ExploreMapView: View {
     // MARK: - Itinerary day bar
 
     private func itineraryDayBar(plan: ItineraryPlan) -> some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        let days: [Int] = Array(1...plan.totalDays)
+        return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(Array(1...plan.totalDays), id: \.self) { day in
+                ForEach(days, id: \.self) { day in
                     let isActive = itineraryManager.selectedDay == day
                     Button {
                         withAnimation(.easeInOut(duration: 0.2)) {

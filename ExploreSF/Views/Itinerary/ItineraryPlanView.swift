@@ -77,9 +77,10 @@ struct ItineraryPlanView: View {
     // MARK: - Day selector
 
     private func daySelector(_ plan: ItineraryPlan) -> some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        let days: [Int] = Array(1...plan.totalDays)
+        return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(Array(1...plan.totalDays), id: \.self) { day in
+                ForEach(days, id: \.self) { day in
                     let dayStops  = plan.orderedStops(for: day)
                     let doneCount = dayStops.filter(\.isCompleted).count
                     let isActive  = manager.selectedDay == day
