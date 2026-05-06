@@ -5,13 +5,10 @@ import SwiftData
 struct ExploreSFApp: App {
     let sharedModelContainer: ModelContainer
     @State private var itineraryManager: ItineraryManager
+    @State private var dataStore = DataStore()
 
     init() {
         let schema = Schema([
-            MovieLocation.self,
-            POPOSLocation.self,
-            ParkLocation.self,
-            ArtLocation.self,
             SavedPlace.self,
             ItineraryPlan.self,
             ItineraryStop.self
@@ -29,10 +26,9 @@ struct ExploreSFApp: App {
     var body: some Scene {
         WindowGroup {
             AppRouterView()
-                .onAppear {
-                    DataImporter.shared(modelContext: sharedModelContainer.mainContext)
-                }
+                .onAppear { dataStore.load() }
                 .environment(itineraryManager)
+                .environment(dataStore)
         }
         .modelContainer(sharedModelContainer)
     }
