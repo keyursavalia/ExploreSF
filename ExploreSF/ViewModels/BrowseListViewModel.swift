@@ -61,15 +61,20 @@ final class BrowseListViewModel {
     // MARK: - Loading
 
     func loadFilm(_ locations: [FilmLocation]) {
-        let grouped = Dictionary(grouping: locations, by: { $0.title + $0.releaseYear })
-        filmEntries = grouped.map { _, locs in
-            FilmEntry(
-                id: locs[0].title + locs[0].releaseYear,
-                title: locs[0].title,
-                releaseYear: locs[0].releaseYear,
-                locations: locs
-            )
-        }.sorted { $0.title < $1.title }
+        Task {
+            let entries = await Task.detached(priority: .userInitiated) {
+                let grouped = Dictionary(grouping: locations, by: { $0.title + $0.releaseYear })
+                return grouped.map { _, locs in
+                    FilmEntry(
+                        id: locs[0].title + locs[0].releaseYear,
+                        title: locs[0].title,
+                        releaseYear: locs[0].releaseYear,
+                        locations: locs
+                    )
+                }.sorted { $0.title < $1.title }
+            }.value
+            filmEntries = entries
+        }
     }
 
     func loadPOPOS(_ places: [POPOSPlace]) { poposPlaces = places }
