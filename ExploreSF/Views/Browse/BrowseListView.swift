@@ -1,11 +1,7 @@
 import SwiftUI
-import SwiftData
 
 struct BrowseListView: View {
-    @Query(sort: \MovieLocation.title)  private var allFilm:  [MovieLocation]
-    @Query(sort: \POPOSLocation.name)   private var allPOPOS: [POPOSLocation]
-    @Query(sort: \ParkLocation.name)    private var allParks: [ParkLocation]
-    @Query(sort: \ArtLocation.title)    private var allArt:   [ArtLocation]
+    @Environment(DataStore.self) private var dataStore
 
     @State private var vm = BrowseListViewModel()
     @State private var showCategoryPicker = false
@@ -85,10 +81,10 @@ struct BrowseListView: View {
         .sheet(item: $selectedArt) { place in
             ArtDetailView(place: place)
         }
-        .onChange(of: allFilm, initial: true)  { _, new in vm.loadFilm(new.map(FilmLocation.init)) }
-        .onChange(of: allPOPOS, initial: true) { _, new in vm.loadPOPOS(new.map(POPOSPlace.init)) }
-        .onChange(of: allParks, initial: true) { _, new in vm.loadParks(new.map(ParkPlace.init)) }
-        .onChange(of: allArt,   initial: true) { _, new in vm.loadArt(new.map(ArtPlace.init)) }
+        .onChange(of: dataStore.filmLocations, initial: true) { _, new in vm.loadFilm(new) }
+        .onChange(of: dataStore.poposPlaces,   initial: true) { _, new in vm.loadPOPOS(new) }
+        .onChange(of: dataStore.parkPlaces,    initial: true) { _, new in vm.loadParks(new) }
+        .onChange(of: dataStore.artPlaces,     initial: true) { _, new in vm.loadArt(new) }
         .onChange(of: router.activeCategories, initial: true) { _, cats in
             vm.activeCategories = cats
             if let current = expandedCategory, !cats.contains(current) {
