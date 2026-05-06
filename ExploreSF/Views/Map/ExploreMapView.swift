@@ -1,12 +1,10 @@
 import SwiftUI
 import MapKit
-import SwiftData
 
 struct ExploreMapView: View {
-    @Query(sort: \MovieLocation.title)  private var allFilm:  [MovieLocation]
-    @Query(sort: \POPOSLocation.name)   private var allPOPOS: [POPOSLocation]
-    @Query(sort: \ParkLocation.name)    private var allParks: [ParkLocation]
-    @Query(sort: \ArtLocation.title)    private var allArt:   [ArtLocation]
+    @Environment(DataStore.self)        private var dataStore
+    @Environment(AppRouter.self)        private var router
+    @Environment(ItineraryManager.self) private var itineraryManager
 
     @State private var viewModel = MapViewModel()
     @State private var cameraPosition: MapCameraPosition = .region(
@@ -16,9 +14,6 @@ struct ExploreMapView: View {
         )
     )
     @State private var showCategoryPopover = false
-
-    @Environment(AppRouter.self)        private var router
-    @Environment(ItineraryManager.self) private var itineraryManager
 
     var body: some View {
         @Bindable var vm = viewModel
@@ -73,17 +68,17 @@ struct ExploreMapView: View {
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
-        .onChange(of: allFilm, initial: true) { _, new in
-            viewModel.loadFilmLocations(new.map(FilmLocation.init))
+        .onChange(of: dataStore.filmLocations, initial: true) { _, new in
+            viewModel.loadFilmLocations(new)
         }
-        .onChange(of: allPOPOS, initial: true) { _, new in
-            viewModel.loadPOPOSPlaces(new.map(POPOSPlace.init))
+        .onChange(of: dataStore.poposPlaces, initial: true) { _, new in
+            viewModel.loadPOPOSPlaces(new)
         }
-        .onChange(of: allParks, initial: true) { _, new in
-            viewModel.loadParkPlaces(new.map(ParkPlace.init), polygons: loadParkPolygons())
+        .onChange(of: dataStore.parkPlaces, initial: true) { _, new in
+            viewModel.loadParkPlaces(new, polygons: dataStore.parkPolygons)
         }
-        .onChange(of: allArt, initial: true) { _, new in
-            viewModel.loadArtPlaces(new.map(ArtPlace.init))
+        .onChange(of: dataStore.artPlaces, initial: true) { _, new in
+            viewModel.loadArtPlaces(new)
         }
         .onChange(of: router.activeCategories, initial: true) { old, cats in
             viewModel.activeCategories = cats
