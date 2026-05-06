@@ -96,6 +96,9 @@ struct ExploreMapView: View {
             }
             viewModel.pendingFlyToCoordinate = nil
         }
+        .onMapCameraChange(frequency: .onEnd) { context in
+            viewModel.visibleRegion = context.region
+        }
     }
 
     // MARK: - Normal map content
