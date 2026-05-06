@@ -1,6 +1,6 @@
 import Foundation
 
-func loadFilmData() -> [Feature] {
+nonisolated func loadFilmData() -> [Feature] {
     guard let url = Bundle.main.url(forResource: "Film_Locations_in_San_Francisco_20260430", withExtension: "geojson"),
             let data = try? Data(contentsOf: url) else {
         return []

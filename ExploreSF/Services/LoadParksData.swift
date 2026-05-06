@@ -1,6 +1,6 @@
 import Foundation
 
-func loadParksData() -> [ParkFeature] {
+nonisolated func loadParksData() -> [ParkFeature] {
     guard let url = Bundle.main.url(forResource: "Recreation_and_Parks_Properties_20260501", withExtension: "geojson"),
           let data = try? Data(contentsOf: url) else {
         return []

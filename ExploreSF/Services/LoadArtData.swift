@@ -1,6 +1,6 @@
 import Foundation
 
-func loadArtData() -> [ArtFeature] {
+nonisolated func loadArtData() -> [ArtFeature] {
     guard let url = Bundle.main.url(forResource: "Public_Art_20240313", withExtension: "geojson"),
           let data = try? Data(contentsOf: url) else {
         return []
@@ -26,7 +26,7 @@ private func synthesizeID(from title: String?) -> String {
 }
 
 extension ArtFeature {
-    var synthesizedID: String {
+    nonisolated var synthesizedID: String {
         let base = (properties.title ?? "unknown")
             .lowercased()
             .components(separatedBy: .alphanumerics.inverted)

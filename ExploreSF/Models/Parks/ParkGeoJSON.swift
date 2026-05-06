@@ -15,7 +15,7 @@ struct ParkGeometry: Codable {
     let coordinates: [[[[Double]]]]
 
     /// Extracts the exterior ring of each polygon part, dropping holes.
-    var exteriorRings: [[CLLocationCoordinate2D]] {
+    nonisolated var exteriorRings: [[CLLocationCoordinate2D]] {
         coordinates.compactMap { polygon in
             guard let exterior = polygon.first else { return nil }
             return exterior.compactMap { coord in

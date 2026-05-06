@@ -1,6 +1,6 @@
 import Foundation
 
-func loadPOPOSData() -> [POPOSFeature] {
+nonisolated func loadPOPOSData() -> [POPOSFeature] {
     guard let url = Bundle.main.url(forResource: "Privately_Owned_Public_Open_Spaces_20260501", withExtension: "geojson"),
           let data = try? Data(contentsOf: url) else {
         return []
