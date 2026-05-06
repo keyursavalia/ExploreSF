@@ -1,5 +1,6 @@
 import Foundation
 import CoreLocation
+import MapKit
 import Observation
 
 @MainActor
@@ -17,6 +18,7 @@ final class MapViewModel {
 
     var selectedPin: PlacePin? = nil
     var pendingFlyToCoordinate: CLLocationCoordinate2D? = nil
+    var visibleRegion: MKCoordinateRegion? = nil
 
     // Film-specific filter state (carried over from original MapViewModel)
     var searchText:           String       = ""
@@ -32,13 +34,18 @@ final class MapViewModel {
         if activeCategories.contains(.popos) { pins.append(contentsOf: filteredPOPOSPlaces.map    { PlacePin(from: $0) }) }
         if activeCategories.contains(.park)  { pins.append(contentsOf: filteredParkPlaces.map     { PlacePin(from: $0) }) }
         if activeCategories.contains(.art)   { pins.append(contentsOf: filteredArtPlaces.map      { PlacePin(from: $0) }) }
-        return pins
+        guard let region = visibleRegion else { return pins }
+        return pins.filter { region.contains($0.coordinate) }
     }
 
     var visiblePolygons: [ParkPolygon] {
         guard activeCategories.contains(.park) else { return [] }
         let visibleIDs = Set(filteredParkPlaces.map(\.id))
-        return parkPolygons.filter { visibleIDs.contains($0.id) }
+        let filtered = parkPolygons.filter { visibleIDs.contains($0.id) }
+        guard let region = visibleRegion else { return filtered }
+        return filtered.filter { polygon in
+            polygon.rings.contains { ring in ring.contains { region.contains($0) } }
+        }
     }
 
     // MARK: - Film filtering
@@ -244,5 +251,14 @@ final class MapViewModel {
         searchText          = ""
         filterState         = FilterState()
         actorFilteredTitles = nil
+    }
+}
+
+private extension MKCoordinateRegion {
+    func contains(_ coordinate: CLLocationCoordinate2D, buffer: Double = 1.2) -> Bool {
+        let halfLat = span.latitudeDelta  * 0.5 * buffer
+        let halfLon = span.longitudeDelta * 0.5 * buffer
+        return abs(coordinate.latitude  - center.latitude)  <= halfLat
+            && abs(coordinate.longitude - center.longitude) <= halfLon
     }
 }
