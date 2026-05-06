@@ -19,16 +19,3 @@ struct ParkPlace: Identifiable, Hashable {
     }
 }
 
-extension ParkPlace {
-    init(from model: ParkLocation) {
-        self.id           = model.id
-        self.name         = model.name
-        self.acres        = model.acres
-        self.propertyType = model.propertyType
-        self.address      = model.address
-        self.neighborhood = model.neighborhood
-        self.complex      = model.complex
-        self.latitude     = model.latitude
-        self.longitude    = model.longitude
-    }
-}
