@@ -146,27 +146,18 @@ struct ExploreMapView: View {
     // MARK: - Itinerary day bar
 
     private func itineraryDayBar(plan: ItineraryPlan) -> some View {
-        let days: [Int] = Array(1...plan.totalDays)
-        return ScrollView(.horizontal, showsIndicators: false) {
+        ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(days, id: \.self) { day in
-                    let isActive = itineraryManager.selectedDay == day
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            itineraryManager.selectedDay = day
+                ForEach(0..<plan.totalDays) { index in
+                    ItineraryDayPill(
+                        day: index + 1,
+                        isActive: itineraryManager.selectedDay == index + 1,
+                        onSelect: {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                itineraryManager.selectedDay = index + 1
+                            }
                         }
-                    } label: {
-                        Text("Day \(day)")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(isActive ? Color.appPaper : Color.appInk)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(isActive ? Color.appInk : .ultraThinMaterial)
-                            .clipShape(Capsule())
-                            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-                    }
-                    .buttonStyle(.plain)
-                    .animation(.easeInOut(duration: 0.2), value: isActive)
+                    )
                 }
             }
             .padding(.horizontal, 16)

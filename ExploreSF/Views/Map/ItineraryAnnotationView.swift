@@ -30,6 +30,27 @@ struct ItineraryAnnotationView: View {
     }
 }
 
+struct ItineraryDayPill: View {
+    let day: Int
+    let isActive: Bool
+    let onSelect: () -> Void
+
+    var body: some View {
+        Button(action: onSelect) {
+            Text("Day \(day)")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(isActive ? Color.appPaper : Color.appInk)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(isActive ? Color.appInk : .ultraThinMaterial)
+                .clipShape(Capsule())
+                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+        }
+        .buttonStyle(.plain)
+        .animation(.easeInOut(duration: 0.2), value: isActive)
+    }
+}
+
 private struct ItineraryPinTriangle: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
