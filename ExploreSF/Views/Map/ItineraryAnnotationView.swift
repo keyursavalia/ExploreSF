@@ -42,7 +42,7 @@ struct ItineraryDayPill: View {
                 .foregroundStyle(isActive ? Color.appPaper : Color.appInk)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(isActive ? Color.appInk : .ultraThinMaterial)
+                .background(isActive ? Color.appInk : Color.appCard)
                 .clipShape(Capsule())
                 .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
         }
