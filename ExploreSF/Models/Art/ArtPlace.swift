@@ -14,18 +14,3 @@ struct ArtPlace: Identifiable, Hashable {
     let longitude: Double
 }
 
-extension ArtPlace {
-    init(from model: ArtLocation) {
-        self.id                  = model.id
-        self.title               = model.title
-        self.locationName        = model.locationName
-        self.artType             = model.artType
-        self.medium              = model.medium
-        self.locationDescription = model.locationDescription
-        self.accessibility       = model.accessibility
-        self.descriptionText     = model.descriptionText
-        self.artistLink          = model.artistLink
-        self.latitude            = model.latitude
-        self.longitude           = model.longitude
-    }
-}
