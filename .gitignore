@@ -4,8 +4,9 @@
 # Design assets and local resources — never commit (root-anchored to avoid matching ExploreSF/Resources/)
 /resources/
 
-# API keys and secrets — never commit; copy Config.template.swift → Config.swift
+# API keys and secrets — never commit; copy Config.template.txt → Config.swift
 ExploreSF/Config.swift
+ExploreSF/Config 2.swift
 
 # macOS
 .DS_Store
