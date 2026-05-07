@@ -1,3 +1,6 @@
+# Claude Code session documentation — local only, never push
+/.claude/
+
 # Design assets and local resources — never commit (root-anchored to avoid matching ExploreSF/Resources/)
 /resources/
 
