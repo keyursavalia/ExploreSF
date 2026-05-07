@@ -4,31 +4,36 @@ import Observation
 @MainActor
 @Observable
 final class DataStore {
-    var filmLocations: [FilmLocation] = []
-    var poposPlaces:   [POPOSPlace]   = []
-    var parkPlaces:    [ParkPlace]    = []
-    var parkPolygons:  [ParkPolygon]  = []
-    var artPlaces:     [ArtPlace]     = []
+    var filmLocations:     [FilmLocation]      = []
+    var poposPlaces:       [POPOSPlace]        = []
+    var parkPlaces:        [ParkPlace]         = []
+    var parkPolygons:      [ParkPolygon]       = []
+    var artPlaces:         [ArtPlace]          = []
+    var bathroomPlaces:    [BathroomPlace]     = []
+    var waterFountainPlaces: [WaterFountainPlace] = []
 
     func load() {
         Task {
             let result = await Task.detached(priority: .userInitiated) {
                 DataStore.parseAll()
             }.value
-            filmLocations = result.film
-            poposPlaces   = result.popos
-            parkPlaces    = result.parks
-            parkPolygons  = result.polygons
-            artPlaces     = result.art
+            filmLocations       = result.film
+            poposPlaces         = result.popos
+            parkPlaces          = result.parks
+            parkPolygons        = result.polygons
+            artPlaces           = result.art
+            bathroomPlaces      = result.bathrooms
+            waterFountainPlaces = result.waterFountains
         }
     }
 
     private nonisolated static func parseAll() -> (
         film: [FilmLocation], popos: [POPOSPlace],
-        parks: [ParkPlace], polygons: [ParkPolygon], art: [ArtPlace]
+        parks: [ParkPlace], polygons: [ParkPolygon], art: [ArtPlace],
+        bathrooms: [BathroomPlace], waterFountains: [WaterFountainPlace]
     ) {
         let (parks, polygons) = parseParks()
-        return (parseFilm(), parsePOPOS(), parks, polygons, parseArt())
+        return (parseFilm(), parsePOPOS(), parks, polygons, parseArt(), parseBathrooms(), parseWaterFountains())
     }
 
     private nonisolated static func parseFilm() -> [FilmLocation] {
@@ -107,6 +112,50 @@ final class DataStore {
                 artistLink: p.artistlink ?? "",
                 latitude: geo.coordinates[1],
                 longitude: geo.coordinates[0]
+            )
+        }
+    }
+
+    private nonisolated static func parseBathrooms() -> [BathroomPlace] {
+        loadBathroomsData().map { feature in
+            let p = feature.properties
+            let lat = Double(p.latitude ?? "") ?? feature.geometry.coordinates[1]
+            let lon = Double(p.longitude ?? "") ?? feature.geometry.coordinates[0]
+            return BathroomPlace(
+                id: p.uid,
+                name: p.name,
+                address: p.address ?? "",
+                hoursOpen: p.publicAccessHoursOpen,
+                hoursClose: p.publicAccessHoursClose,
+                accessDays: p.publicAccessDays ?? "Daily",
+                isPublicAccess: p.access == "publicly_accessible",
+                park: p.park,
+                notes: p.notes,
+                latitude: lat,
+                longitude: lon
+            )
+        }
+    }
+
+    private nonisolated static func parseWaterFountains() -> [WaterFountainPlace] {
+        loadWaterFountainsData().map { feature in
+            let p = feature.properties
+            let lat = Double(p.latitude ?? "") ?? feature.geometry.coordinates[1]
+            let lon = Double(p.longitude ?? "") ?? feature.geometry.coordinates[0]
+            return WaterFountainPlace(
+                id: p.uid,
+                name: p.name,
+                address: p.address ?? "",
+                hoursOpen: p.publicAccessHoursOpen,
+                hoursClose: p.publicAccessHoursClose,
+                accessDays: p.publicAccessDays ?? "Daily",
+                isPublicAccess: p.access == "publicly_accessible",
+                park: p.park,
+                notes: p.notes,
+                hasBottleFiller: p.bottleFiller == "1",
+                hasDogFountain: p.dogFountain == "1",
+                latitude: lat,
+                longitude: lon
             )
         }
     }
