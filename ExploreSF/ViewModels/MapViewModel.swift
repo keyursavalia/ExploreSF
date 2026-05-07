@@ -13,6 +13,18 @@ final class MapViewModel {
     var parkPolygons:   [ParkPolygon]   = []
     var artPlaces:      [ArtPlace]      = []
 
+    // Utility overlay data (not categories)
+    var bathroomPlaces:      [BathroomPlace]      = []
+    var waterFountainPlaces: [WaterFountainPlace]  = []
+
+    // Utility overlay toggle state
+    var showBathrooms:      Bool = false
+    var showWaterFountains: Bool = false
+
+    // Utility overlay selection (for info sheets)
+    var selectedBathroom:      BathroomPlace?      = nil
+    var selectedWaterFountain: WaterFountainPlace?  = nil
+
     // Active categories (set by AppRouter after category picker)
     var activeCategories: Set<AppCategory> = Set(AppCategory.allCases)
 
@@ -46,6 +58,20 @@ final class MapViewModel {
         return filtered.filter { polygon in
             polygon.rings.contains { ring in ring.contains { region.contains($0) } }
         }
+    }
+
+    // MARK: - Utility overlay visible arrays
+
+    var visibleBathrooms: [BathroomPlace] {
+        guard showBathrooms else { return [] }
+        guard let region = visibleRegion else { return bathroomPlaces }
+        return bathroomPlaces.filter { region.contains($0.coordinate) }
+    }
+
+    var visibleWaterFountains: [WaterFountainPlace] {
+        guard showWaterFountains else { return [] }
+        guard let region = visibleRegion else { return waterFountainPlaces }
+        return waterFountainPlaces.filter { region.contains($0.coordinate) }
     }
 
     // MARK: - Film filtering
@@ -189,6 +215,14 @@ final class MapViewModel {
 
     func loadArtPlaces(_ places: [ArtPlace]) {
         self.artPlaces = places
+    }
+
+    func loadBathroomPlaces(_ places: [BathroomPlace]) {
+        self.bathroomPlaces = places
+    }
+
+    func loadWaterFountainPlaces(_ places: [WaterFountainPlace]) {
+        self.waterFountainPlaces = places
     }
 
     // MARK: - Navigation
