@@ -43,6 +43,14 @@ struct ExploreMapView: View {
                 onActorSelected:            { name in await viewModel.applyActorFilter(name: name) }
             )
 
+            UtilityToggleButtonsView(
+                showBathrooms:      $vm.showBathrooms,
+                showWaterFountains: $vm.showWaterFountains
+            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding(.top, 116)
+            .padding(.leading, 16)
+
             VStack {
                 Spacer()
                 if itineraryManager.isItineraryModeActive,
@@ -68,6 +76,16 @@ struct ExploreMapView: View {
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
+        .sheet(item: $vm.selectedBathroom) { place in
+            BathroomInfoSheet(place: place)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(item: $vm.selectedWaterFountain) { place in
+            WaterFountainInfoSheet(place: place)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+        }
         .onChange(of: dataStore.filmLocations, initial: true) { _, new in
             viewModel.loadFilmLocations(new)
         }
@@ -79,6 +97,12 @@ struct ExploreMapView: View {
         }
         .onChange(of: dataStore.artPlaces, initial: true) { _, new in
             viewModel.loadArtPlaces(new)
+        }
+        .onChange(of: dataStore.bathroomPlaces, initial: true) { _, new in
+            viewModel.loadBathroomPlaces(new)
+        }
+        .onChange(of: dataStore.waterFountainPlaces, initial: true) { _, new in
+            viewModel.loadWaterFountainPlaces(new)
         }
         .onChange(of: router.activeCategories, initial: true) { old, cats in
             viewModel.activeCategories = cats
@@ -113,6 +137,42 @@ struct ExploreMapView: View {
                 MapPolygon(coordinates: ring)
                     .foregroundStyle(AppCategory.park.color.opacity(0.18))
                     .stroke(AppCategory.park.color.opacity(0.5), lineWidth: 1.5)
+            }
+        }
+        ForEach(viewModel.visibleBathrooms) { place in
+            Annotation(place.name, coordinate: place.coordinate, anchor: .center) {
+                Button {
+                    viewModel.selectedBathroom = place
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(UtilityToggleButtonsView.bathroomColor)
+                            .frame(width: 30, height: 30)
+                            .shadow(color: .black.opacity(0.2), radius: 3, x: 0, y: 1)
+                        Image(systemName: "toilet")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(.white)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        ForEach(viewModel.visibleWaterFountains) { place in
+            Annotation(place.name, coordinate: place.coordinate, anchor: .center) {
+                Button {
+                    viewModel.selectedWaterFountain = place
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(UtilityToggleButtonsView.fountainColor)
+                            .frame(width: 30, height: 30)
+                            .shadow(color: .black.opacity(0.2), radius: 3, x: 0, y: 1)
+                        Image(systemName: "drop.fill")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(.white)
+                    }
+                }
+                .buttonStyle(.plain)
             }
         }
     }
