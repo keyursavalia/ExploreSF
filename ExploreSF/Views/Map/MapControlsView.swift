@@ -30,7 +30,6 @@ struct MapControlsView: View {
         .padding(.horizontal, 16)
         .padding(.top, 56)
         .padding(.bottom, 10)
-        .background(.ultraThinMaterial)
         .sheet(isPresented: $showFilterSheet) {
             MapFilterSheetView(
                 activeCategories:           activeCategories,
