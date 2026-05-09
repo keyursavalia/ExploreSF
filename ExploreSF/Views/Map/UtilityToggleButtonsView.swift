@@ -3,9 +3,11 @@ import SwiftUI
 struct UtilityToggleButtonsView: View {
     @Binding var showBathrooms: Bool
     @Binding var showWaterFountains: Bool
+    @Binding var showFoodTrucks: Bool
 
-    static let bathroomColor  = Color(red: 60/255,  green: 143/255, blue: 210/255)
+    static let bathroomColor   = Color(red: 60/255,  green: 143/255, blue: 210/255)
     static let fountainColor   = Color(red: 32/255,  green: 160/255, blue: 175/255)
+    static let foodTruckColor  = Color(red: 210/255, green: 140/255, blue: 30/255)
 
     var body: some View {
         VStack(spacing: 8) {
@@ -22,6 +24,13 @@ struct UtilityToggleButtonsView: View {
                 activeColor: Self.fountainColor
             ) {
                 withAnimation(.easeInOut(duration: 0.2)) { showWaterFountains.toggle() }
+            }
+            toggleButton(
+                icon: "fork.knife",
+                isOn: showFoodTrucks,
+                activeColor: Self.foodTruckColor
+            ) {
+                withAnimation(.easeInOut(duration: 0.2)) { showFoodTrucks.toggle() }
             }
         }
     }
