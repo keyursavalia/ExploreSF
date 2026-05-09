@@ -45,7 +45,8 @@ struct ExploreMapView: View {
 
             UtilityToggleButtonsView(
                 showBathrooms:      $vm.showBathrooms,
-                showWaterFountains: $vm.showWaterFountains
+                showWaterFountains: $vm.showWaterFountains,
+                showFoodTrucks:     $vm.showFoodTrucks
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .padding(.top, 116)
@@ -86,6 +87,11 @@ struct ExploreMapView: View {
                 .presentationDetents([.medium])
                 .presentationDragIndicator(.visible)
         }
+        .sheet(item: $vm.selectedFoodTruck) { place in
+            FoodTruckInfoSheet(place: place)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+        }
         .onChange(of: dataStore.filmLocations, initial: true) { _, new in
             viewModel.loadFilmLocations(new)
         }
@@ -103,6 +109,9 @@ struct ExploreMapView: View {
         }
         .onChange(of: dataStore.waterFountainPlaces, initial: true) { _, new in
             viewModel.loadWaterFountainPlaces(new)
+        }
+        .onChange(of: dataStore.foodTruckPlaces, initial: true) { _, new in
+            viewModel.loadFoodTruckPlaces(new)
         }
         .onChange(of: router.activeCategories, initial: true) { old, cats in
             viewModel.activeCategories = cats
@@ -168,6 +177,24 @@ struct ExploreMapView: View {
                             .frame(width: 30, height: 30)
                             .shadow(color: .black.opacity(0.2), radius: 3, x: 0, y: 1)
                         Image(systemName: "drop.fill")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(.white)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        ForEach(viewModel.visibleFoodTrucks) { place in
+            Annotation(place.name, coordinate: place.coordinate, anchor: .center) {
+                Button {
+                    viewModel.selectedFoodTruck = place
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(UtilityToggleButtonsView.foodTruckColor)
+                            .frame(width: 30, height: 30)
+                            .shadow(color: .black.opacity(0.2), radius: 3, x: 0, y: 1)
+                        Image(systemName: "fork.knife")
                             .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(.white)
                     }
