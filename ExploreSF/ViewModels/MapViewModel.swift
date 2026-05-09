@@ -16,14 +16,17 @@ final class MapViewModel {
     // Utility overlay data (not categories)
     var bathroomPlaces:      [BathroomPlace]      = []
     var waterFountainPlaces: [WaterFountainPlace]  = []
+    var foodTruckPlaces:     [FoodTruckPlace]      = []
 
     // Utility overlay toggle state
     var showBathrooms:      Bool = false
     var showWaterFountains: Bool = false
+    var showFoodTrucks:     Bool = false
 
     // Utility overlay selection (for info sheets)
     var selectedBathroom:      BathroomPlace?      = nil
     var selectedWaterFountain: WaterFountainPlace?  = nil
+    var selectedFoodTruck:     FoodTruckPlace?      = nil
 
     // Active categories (set by AppRouter after category picker)
     var activeCategories: Set<AppCategory> = Set(AppCategory.allCases)
@@ -72,6 +75,12 @@ final class MapViewModel {
         guard showWaterFountains else { return [] }
         guard let region = visibleRegion else { return waterFountainPlaces }
         return waterFountainPlaces.filter { region.contains($0.coordinate) }
+    }
+
+    var visibleFoodTrucks: [FoodTruckPlace] {
+        guard showFoodTrucks else { return [] }
+        guard let region = visibleRegion else { return foodTruckPlaces }
+        return foodTruckPlaces.filter { region.contains($0.coordinate) }
     }
 
     // MARK: - Film filtering
@@ -223,6 +232,10 @@ final class MapViewModel {
 
     func loadWaterFountainPlaces(_ places: [WaterFountainPlace]) {
         self.waterFountainPlaces = places
+    }
+
+    func loadFoodTruckPlaces(_ places: [FoodTruckPlace]) {
+        self.foodTruckPlaces = places
     }
 
     // MARK: - Navigation
