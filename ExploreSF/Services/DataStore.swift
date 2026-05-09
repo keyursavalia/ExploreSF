@@ -9,8 +9,9 @@ final class DataStore {
     var parkPlaces:        [ParkPlace]         = []
     var parkPolygons:      [ParkPolygon]       = []
     var artPlaces:         [ArtPlace]          = []
-    var bathroomPlaces:    [BathroomPlace]     = []
+    var bathroomPlaces:      [BathroomPlace]      = []
     var waterFountainPlaces: [WaterFountainPlace] = []
+    var foodTruckPlaces:     [FoodTruckPlace]     = []
 
     func load() {
         Task {
@@ -24,16 +25,18 @@ final class DataStore {
             artPlaces           = result.art
             bathroomPlaces      = result.bathrooms
             waterFountainPlaces = result.waterFountains
+            foodTruckPlaces     = result.foodTrucks
         }
     }
 
     private nonisolated static func parseAll() -> (
         film: [FilmLocation], popos: [POPOSPlace],
         parks: [ParkPlace], polygons: [ParkPolygon], art: [ArtPlace],
-        bathrooms: [BathroomPlace], waterFountains: [WaterFountainPlace]
+        bathrooms: [BathroomPlace], waterFountains: [WaterFountainPlace],
+        foodTrucks: [FoodTruckPlace]
     ) {
         let (parks, polygons) = parseParks()
-        return (parseFilm(), parsePOPOS(), parks, polygons, parseArt(), parseBathrooms(), parseWaterFountains())
+        return (parseFilm(), parsePOPOS(), parks, polygons, parseArt(), parseBathrooms(), parseWaterFountains(), parseFoodTrucks())
     }
 
     private nonisolated static func parseFilm() -> [FilmLocation] {
@@ -154,6 +157,28 @@ final class DataStore {
                 notes: p.notes,
                 hasBottleFiller: p.bottleFiller == "1",
                 hasDogFountain: p.dogFountain == "1",
+                latitude: lat,
+                longitude: lon
+            )
+        }
+    }
+
+    private nonisolated static func parseFoodTrucks() -> [FoodTruckPlace] {
+        loadFoodTruckData().map { feature in
+            let p = feature.properties
+            let lat = feature.geometry.coordinates[1]
+            let lon = feature.geometry.coordinates[0]
+            let permit = p.requiredar.flatMap {
+                $0.hasPrefix("Permit: ") ? String($0.dropFirst(8)) : $0
+            } ?? ""
+            let id = "\(permit)_\(String(format: "%.5f", lat))_\(String(format: "%.5f", lon))"
+            return FoodTruckPlace(
+                id: id,
+                name: p.name ?? "Unknown Vendor",
+                foodItems: p.title ?? "",
+                facilityType: FoodTruckPlace.FacilityType(raw: p.type),
+                locationDescription: p.location ?? "",
+                permitNumber: permit,
                 latitude: lat,
                 longitude: lon
             )
