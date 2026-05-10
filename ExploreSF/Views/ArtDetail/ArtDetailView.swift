@@ -57,7 +57,7 @@ struct ArtDetailView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 220)
 
-            Text("Public Art")
+            Text(AppCategory.art.displayName)
                 .eyebrowStyle()
                 .padding(.top, 24)
 
