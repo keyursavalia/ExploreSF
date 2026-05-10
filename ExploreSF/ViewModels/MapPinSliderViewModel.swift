@@ -27,7 +27,7 @@ final class MapPinSliderViewModel {
                 group.addTask { await self.fetchTMDB() }
                 group.addTask { await self.checkLookAround() }
             }
-        case .popos, .park, .art:
+        case .popos, .park, .art, .entertainment:
             await checkLookAround()
         }
     }
