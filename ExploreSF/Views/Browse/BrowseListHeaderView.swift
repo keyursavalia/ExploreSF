@@ -31,15 +31,6 @@ struct BrowseListHeaderView: View {
                     .padding(.top, 4)
             }
 
-            HStack(spacing: 4) {
-                Rectangle()
-                    .fill(Color.appInk3)
-                    .frame(width: 16, height: 1)
-                Text("\(activeCategories.count) \(activeCategories.count == 1 ? "category" : "categories") active")
-                    .font(.system(size: 13))
-                    .foregroundStyle(Color.appInk3)
-            }
-            .padding(.top, 6)
         }
     }
 }
