@@ -31,12 +31,11 @@ struct ParkPlaceRowView: View {
     }
 
     private var thumbnail: some View {
-        MapSnapshotThumbnail(
+        LookAroundThumbnail(
             id: place.id,
             coordinate: place.coordinate,
             category: .park,
-            cornerRadius: 8,
-            size: CGSize(width: 64, height: 80)
+            cornerRadius: 8
         )
         .frame(width: 64, height: 80)
     }
