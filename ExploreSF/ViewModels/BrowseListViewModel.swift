@@ -4,10 +4,11 @@ import Observation
 @MainActor
 @Observable
 final class BrowseListViewModel {
-    var filmEntries:   [FilmEntry]     = []
-    var poposPlaces:   [POPOSPlace]    = []
-    var parkPlaces:    [ParkPlace]     = []
-    var artPlaces:     [ArtPlace]      = []
+    var filmEntries:        [FilmEntry]          = []
+    var poposPlaces:        [POPOSPlace]         = []
+    var parkPlaces:         [ParkPlace]          = []
+    var artPlaces:          [ArtPlace]           = []
+    var entertainmentPlaces: [EntertainmentPlace] = []
 
     var activeCategories: Set<AppCategory> = Set(AppCategory.allCases)
     var searchText: String = ""
@@ -54,8 +55,17 @@ final class BrowseListViewModel {
         }
     }
 
+    var filteredEntertainment: [EntertainmentPlace] {
+        guard activeCategories.contains(.entertainment) else { return [] }
+        guard !searchText.isEmpty else { return entertainmentPlaces }
+        let q = searchText.lowercased()
+        return entertainmentPlaces.filter {
+            $0.name.lowercased().contains(q) || $0.neighborhood.lowercased().contains(q)
+        }
+    }
+
     var totalCount: Int {
-        filteredFilm.count + filteredPOPOS.count + filteredParks.count + filteredArt.count
+        filteredFilm.count + filteredPOPOS.count + filteredParks.count + filteredArt.count + filteredEntertainment.count
     }
 
     // MARK: - Loading
@@ -77,9 +87,10 @@ final class BrowseListViewModel {
         }
     }
 
-    func loadPOPOS(_ places: [POPOSPlace]) { poposPlaces = places }
-    func loadParks(_ places: [ParkPlace])  { parkPlaces = places }
-    func loadArt(_ places: [ArtPlace])     { artPlaces = places }
+    func loadPOPOS(_ places: [POPOSPlace])                 { poposPlaces         = places }
+    func loadParks(_ places: [ParkPlace])                  { parkPlaces          = places }
+    func loadArt(_ places: [ArtPlace])                     { artPlaces           = places }
+    func loadEntertainment(_ places: [EntertainmentPlace]) { entertainmentPlaces = places }
 
     // MARK: - Poster fetching
 
