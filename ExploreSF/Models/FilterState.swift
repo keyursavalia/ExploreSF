@@ -18,11 +18,16 @@ struct FilterState: Equatable {
     var artType:   String? = nil
     var artMedium: String? = nil
 
+    // Entertainment
+    var entertainmentLicenseType:  String? = nil
+    var entertainmentNeighborhood: String? = nil
+
     var isActive: Bool {
         neighborhood    != nil || releaseYear  != nil || actorName  != nil ||
         parkNeighborhood != nil || parkType    != nil ||
         poposSpaceType  != nil || poposFeature != nil ||
-        artType         != nil || artMedium    != nil
+        artType         != nil || artMedium    != nil ||
+        entertainmentLicenseType != nil || entertainmentNeighborhood != nil
     }
 
     enum FilterKey {
@@ -30,19 +35,22 @@ struct FilterState: Equatable {
         case parkNeighborhood, parkType
         case poposSpaceType, poposFeature
         case artType, artMedium
+        case entertainmentLicenseType, entertainmentNeighborhood
     }
 
     mutating func remove(_ key: FilterKey) {
         switch key {
-        case .neighborhood:     neighborhood     = nil
-        case .year:             releaseYear      = nil
-        case .actor:            actorName        = nil
-        case .parkNeighborhood: parkNeighborhood = nil
-        case .parkType:         parkType         = nil
-        case .poposSpaceType:   poposSpaceType   = nil
-        case .poposFeature:     poposFeature     = nil
-        case .artType:          artType          = nil
-        case .artMedium:        artMedium        = nil
+        case .neighborhood:              neighborhood              = nil
+        case .year:                      releaseYear               = nil
+        case .actor:                     actorName                 = nil
+        case .parkNeighborhood:          parkNeighborhood          = nil
+        case .parkType:                  parkType                  = nil
+        case .poposSpaceType:            poposSpaceType            = nil
+        case .poposFeature:              poposFeature              = nil
+        case .artType:                   artType                   = nil
+        case .artMedium:                 artMedium                 = nil
+        case .entertainmentLicenseType:  entertainmentLicenseType  = nil
+        case .entertainmentNeighborhood: entertainmentNeighborhood = nil
         }
     }
 }
