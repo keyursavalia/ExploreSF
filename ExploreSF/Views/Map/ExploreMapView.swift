@@ -49,7 +49,7 @@ struct ExploreMapView: View {
                 showFoodTrucks:     $vm.showFoodTrucks
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .padding(.top, 116)
+            .padding(.top, 70)
             .padding(.leading, 16)
 
             VStack {
