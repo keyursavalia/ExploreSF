@@ -1,19 +1,22 @@
 import SwiftUI
+import MapKit
 
 struct POPOSDetailHeaderView: View {
     let place: POPOSPlace
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(AppCategory.popos.color.opacity(0.2))
-                .overlay(
-                    Image(systemName: "building.columns")
-                        .font(.system(size: 48))
-                        .foregroundStyle(AppCategory.popos.color.opacity(0.6))
-                )
-                .frame(maxWidth: .infinity)
-                .frame(height: 220)
+            MapSnapshotView(
+                id: place.id,
+                coordinate: place.coordinate,
+                style: .streetHybrid,
+                category: .popos,
+                cornerRadius: 20,
+                snapshotSize: CGSize(width: 390, height: 220),
+                iconSize: 48
+            )
+            .frame(maxWidth: .infinity)
+            .frame(height: 220)
 
             Text("Public Open Space")
                 .eyebrowStyle()
