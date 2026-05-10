@@ -40,9 +40,7 @@ private struct LookAroundThumbnailPreview: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> MKLookAroundViewController {
         let vc = MKLookAroundViewController()
         vc.scene = scene
-        vc.allowsNavigation = false
-        vc.showsRoadLabels = false
-        vc.pointsOfInterestFilter = .excludingAll
+        vc.view.isUserInteractionEnabled = false
         return vc
     }
 
