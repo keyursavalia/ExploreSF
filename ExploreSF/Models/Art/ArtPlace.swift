@@ -1,4 +1,5 @@
 import Foundation
+import CoreLocation
 
 struct ArtPlace: Identifiable, Hashable {
     let id: String
@@ -12,5 +13,9 @@ struct ArtPlace: Identifiable, Hashable {
     let artistLink: String
     let latitude: Double
     let longitude: Double
+
+    var coordinate: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
 }
 
