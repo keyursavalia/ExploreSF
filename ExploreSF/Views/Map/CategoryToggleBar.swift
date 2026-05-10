@@ -54,7 +54,8 @@ struct CategoryToggleBar: View {
     }
 
     private var categoryChips: some View {
-        HStack(spacing: 8) {
+        ScrollView(.horizontal, showsIndicators: false) {
+          HStack(spacing: 8) {
             ForEach(AppCategory.allCases) { cat in
                 let on = pending.contains(cat)
                 Button {
@@ -83,8 +84,9 @@ struct CategoryToggleBar: View {
                 .buttonStyle(.plain)
                 .animation(.easeInOut(duration: 0.15), value: on)
             }
+          }
+          .padding(.horizontal, 4)
         }
-        .padding(.horizontal, 4)
         .padding(.vertical, 10)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
