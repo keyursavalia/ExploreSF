@@ -90,12 +90,19 @@ struct SavedView: View {
     @ViewBuilder
     private var savedHeaderActions: some View {
         if !isSelecting {
-            Button("Select") {
+            Button {
                 isSelecting = true
                 selectedIDs.removeAll()
+            } label: {
+                Text("Select")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Color.appInk2)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 6)
+                    .background(.regularMaterial)
+                    .clipShape(Capsule())
             }
-            .font(.system(size: 15))
-            .foregroundStyle(Color.appInk3)
+            .buttonStyle(.plain)
             .padding(.bottom, 4)
         } else {
             HStack(spacing: 16) {
