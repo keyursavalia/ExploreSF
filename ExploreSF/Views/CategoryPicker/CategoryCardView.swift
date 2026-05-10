@@ -7,10 +7,11 @@ struct CategoryCardView: View {
 
     private var tagline: String {
         switch category {
-        case .film:  return "Movie & TV locations"
-        case .popos: return "Public open spaces"
-        case .park:  return "Rec & Parks properties"
-        case .art:   return "Public Arts"
+        case .film:          return "Movie & TV locations"
+        case .popos:         return "Public open spaces"
+        case .park:          return "Rec & Parks properties"
+        case .art:           return "Public Arts"
+        case .entertainment: return "Venues, stages & nightlife"
         }
     }
 
