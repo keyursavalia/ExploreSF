@@ -1,4 +1,5 @@
 import Foundation
+import CoreLocation
 
 /// Value type representation of a Privately Owned Public Open Space.
 struct POPOSPlace: Identifiable, Hashable {
@@ -15,5 +16,9 @@ struct POPOSPlace: Identifiable, Hashable {
     let seatingInfo: String
     let latitude: Double
     let longitude: Double
+
+    var coordinate: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
 }
 
