@@ -63,7 +63,7 @@ struct SavedView: View {
     private var header: some View {
         HStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 0) {
-                Text("San Francisco · Saved")
+                Text("Explore SF · Saved")
                     .eyebrowStyle()
                 Group {
                     if activeTab == .saved {
