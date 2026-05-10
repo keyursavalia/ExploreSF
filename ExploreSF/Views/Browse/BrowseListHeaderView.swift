@@ -15,7 +15,7 @@ struct BrowseListHeaderView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("San Francisco · Browse")
+            Text("Explore SF · Browse")
                 .eyebrowStyle()
 
             if titleIsItalic {
