@@ -21,6 +21,10 @@ struct MapControlsView: View {
     private var hasActivePlan:   Bool { itineraryManager.activePlan != nil }
     private var isItineraryMode: Bool { itineraryManager.isItineraryModeActive }
 
+    private var filterAccentColor: Color {
+        activeCategories.count == 1 ? (activeCategories.first?.color ?? .appAccent) : .appAccent
+    }
+
     var body: some View {
         HStack(spacing: 10) {
             SearchBarView(text: $searchText, placeholder: "Search…")
@@ -28,7 +32,7 @@ struct MapControlsView: View {
             filterButton
         }
         .padding(.horizontal, 16)
-        .padding(.top, 56)
+        .padding(.top, 10)
         .padding(.bottom, 10)
         .sheet(isPresented: $showFilterSheet) {
             MapFilterSheetView(
@@ -91,14 +95,14 @@ struct MapControlsView: View {
             ZStack(alignment: .topTrailing) {
                 Image(systemName: "line.3.horizontal.decrease")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(isFiltered ? Color.appAccent : Color.appInk)
+                    .foregroundStyle(isFiltered ? filterAccentColor : Color.appInk)
                     .frame(width: 44, height: 44)
-                    .background(isFiltered ? Color.appAccentSoft : Color.appCard)
+                    .background(isFiltered ? filterAccentColor.opacity(0.12) : Color.appCard)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.appCardEdge, lineWidth: 1))
                 if isFiltered {
                     Circle()
-                        .fill(Color.appAccent)
+                        .fill(filterAccentColor)
                         .frame(width: 8, height: 8)
                         .offset(x: 2, y: -2)
                 }
