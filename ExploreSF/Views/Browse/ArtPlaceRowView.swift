@@ -1,5 +1,4 @@
 import SwiftUI
-import MapKit
 
 struct ArtPlaceRowView: View {
     let place: ArtPlace
@@ -31,13 +30,14 @@ struct ArtPlaceRowView: View {
     }
 
     private var thumbnail: some View {
-        LookAroundThumbnail(
-            id: place.id,
-            coordinate: place.coordinate,
-            category: .art,
-            cornerRadius: 8
-        )
-        .frame(width: 64, height: 80)
+        RoundedRectangle(cornerRadius: 8)
+            .fill(AppCategory.art.color.opacity(0.15))
+            .frame(width: 64, height: 80)
+            .overlay(
+                Image(systemName: AppCategory.art.systemIcon)
+                    .font(.system(size: 22))
+                    .foregroundStyle(AppCategory.art.color.opacity(0.5))
+            )
     }
 
     private var bodyText: some View {
