@@ -32,6 +32,12 @@ struct MapPinSliderView: View {
                     } else {
                         ProgressView()
                     }
+                case .entertainment:
+                    if let place = mapViewModel.entertainmentPlace(for: pin) {
+                        EntertainmentPinSliderContentView(place: place, pin: pin)
+                    } else {
+                        ProgressView()
+                    }
                 }
             }
             .navigationTitle(pin.displayName)
