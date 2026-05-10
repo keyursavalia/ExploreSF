@@ -25,6 +25,10 @@ struct MapFilterSheetView: View {
 
     private static let poposFeatures = ["Indoor", "Food", "Art", "Restrooms"]
 
+    private var categoryAccentColor: Color {
+        activeCategories.count == 1 ? (activeCategories.first?.color ?? .appAccent) : .appAccent
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -49,7 +53,7 @@ struct MapFilterSheetView: View {
                 if filterState.isActive {
                     ToolbarItem(placement: .primaryAction) {
                         Button("Clear All") { filterState = FilterState() }
-                            .foregroundStyle(Color.appAccent)
+                            .foregroundStyle(categoryAccentColor)
                     }
                 }
             }
