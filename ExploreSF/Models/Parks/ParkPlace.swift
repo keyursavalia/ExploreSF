@@ -1,4 +1,5 @@
 import Foundation
+import CoreLocation
 
 /// Value type representation of a Recreation & Parks property.
 struct ParkPlace: Identifiable, Hashable {
@@ -11,6 +12,10 @@ struct ParkPlace: Identifiable, Hashable {
     let complex: String
     let latitude: Double
     let longitude: Double
+
+    var coordinate: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
 
     var acresFormatted: String {
         acres >= 10
