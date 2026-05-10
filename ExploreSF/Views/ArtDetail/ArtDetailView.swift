@@ -15,11 +15,6 @@ struct ArtDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     headerSection
-                    if let scene = vm.lookAroundScene {
-                        LookAroundPreviewView(scene: scene)
-                            .frame(height: 200)
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                    }
                     infoSection
                     if !place.descriptionText.isEmpty { descriptionSection }
                     directionsButton
@@ -45,15 +40,20 @@ struct ArtDetailView: View {
 
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 0) {
-            MapSnapshotView(
-                id: place.id,
-                coordinate: place.coordinate,
-                style: .streetHybrid,
-                category: .art,
-                cornerRadius: 20,
-                snapshotSize: CGSize(width: 390, height: 220),
-                iconSize: 48
-            )
+            Group {
+                if let scene = vm.lookAroundScene {
+                    LookAroundPreviewView(scene: scene)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                } else {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(AppCategory.art.color.opacity(0.2))
+                        .overlay(
+                            Image(systemName: "photo.artframe")
+                                .font(.system(size: 48))
+                                .foregroundStyle(AppCategory.art.color.opacity(0.6))
+                        )
+                }
+            }
             .frame(maxWidth: .infinity)
             .frame(height: 220)
 

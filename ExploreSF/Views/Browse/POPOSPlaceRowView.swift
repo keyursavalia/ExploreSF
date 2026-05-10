@@ -1,5 +1,4 @@
 import SwiftUI
-import MapKit
 
 struct POPOSPlaceRowView: View {
     let place: POPOSPlace
@@ -31,16 +30,14 @@ struct POPOSPlaceRowView: View {
     }
 
     private var thumbnail: some View {
-        MapSnapshotView(
-            id: place.id,
-            coordinate: place.coordinate,
-            style: .streetHybrid,
-            category: .popos,
-            cornerRadius: 8,
-            snapshotSize: CGSize(width: 64, height: 80),
-            iconSize: 20
-        )
-        .frame(width: 64, height: 80)
+        RoundedRectangle(cornerRadius: 8)
+            .fill(AppCategory.popos.color.opacity(0.2))
+            .overlay(
+                Image(systemName: "building.columns")
+                    .font(.system(size: 20))
+                    .foregroundStyle(AppCategory.popos.color)
+            )
+            .frame(width: 64, height: 80)
     }
 
     private var bodyText: some View {

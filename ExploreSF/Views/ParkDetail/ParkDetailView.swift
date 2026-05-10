@@ -17,14 +17,8 @@ struct ParkDetailView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
+                    heroSection
                     ParkDetailHeaderView(place: place)
-
-                    if let scene = vm.lookAroundScene {
-                        LookAroundPreviewView(scene: scene)
-                            .frame(height: 200)
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                    }
-
                     ParkDetailInfoView(place: place)
                     directionsButton
                 }
@@ -47,6 +41,25 @@ struct ParkDetailView: View {
         .task { await vm.loadData() }
     }
 
+    private var heroSection: some View {
+        Group {
+            if let scene = vm.lookAroundScene {
+                LookAroundPreviewView(scene: scene)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+            } else {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(AppCategory.park.color.opacity(0.2))
+                    .overlay(
+                        Image(systemName: "tree")
+                            .font(.system(size: 48))
+                            .foregroundStyle(AppCategory.park.color.opacity(0.6))
+                    )
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 220)
+    }
+
     private var directionsButton: some View {
         Button(action: vm.openInMaps) {
             Label("Get Directions", systemImage: "arrow.triangle.turn.up.right.circle.fill")
@@ -59,4 +72,3 @@ struct ParkDetailView: View {
         }
     }
 }
-
