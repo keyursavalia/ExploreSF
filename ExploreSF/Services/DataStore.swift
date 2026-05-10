@@ -4,39 +4,42 @@ import Observation
 @MainActor
 @Observable
 final class DataStore {
-    var filmLocations:     [FilmLocation]      = []
-    var poposPlaces:       [POPOSPlace]        = []
-    var parkPlaces:        [ParkPlace]         = []
-    var parkPolygons:      [ParkPolygon]       = []
-    var artPlaces:         [ArtPlace]          = []
-    var bathroomPlaces:      [BathroomPlace]      = []
-    var waterFountainPlaces: [WaterFountainPlace] = []
-    var foodTruckPlaces:     [FoodTruckPlace]     = []
+    var filmLocations:        [FilmLocation]        = []
+    var poposPlaces:          [POPOSPlace]          = []
+    var parkPlaces:           [ParkPlace]           = []
+    var parkPolygons:         [ParkPolygon]         = []
+    var artPlaces:            [ArtPlace]            = []
+    var entertainmentPlaces:  [EntertainmentPlace]  = []
+    var bathroomPlaces:       [BathroomPlace]       = []
+    var waterFountainPlaces:  [WaterFountainPlace]  = []
+    var foodTruckPlaces:      [FoodTruckPlace]      = []
 
     func load() {
         Task {
             let result = await Task.detached(priority: .userInitiated) {
                 DataStore.parseAll()
             }.value
-            filmLocations       = result.film
-            poposPlaces         = result.popos
-            parkPlaces          = result.parks
-            parkPolygons        = result.polygons
-            artPlaces           = result.art
-            bathroomPlaces      = result.bathrooms
-            waterFountainPlaces = result.waterFountains
-            foodTruckPlaces     = result.foodTrucks
+            filmLocations        = result.film
+            poposPlaces          = result.popos
+            parkPlaces           = result.parks
+            parkPolygons         = result.polygons
+            artPlaces            = result.art
+            entertainmentPlaces  = result.entertainment
+            bathroomPlaces       = result.bathrooms
+            waterFountainPlaces  = result.waterFountains
+            foodTruckPlaces      = result.foodTrucks
         }
     }
 
     private nonisolated static func parseAll() -> (
         film: [FilmLocation], popos: [POPOSPlace],
         parks: [ParkPlace], polygons: [ParkPolygon], art: [ArtPlace],
+        entertainment: [EntertainmentPlace],
         bathrooms: [BathroomPlace], waterFountains: [WaterFountainPlace],
         foodTrucks: [FoodTruckPlace]
     ) {
         let (parks, polygons) = parseParks()
-        return (parseFilm(), parsePOPOS(), parks, polygons, parseArt(), parseBathrooms(), parseWaterFountains(), parseFoodTrucks())
+        return (parseFilm(), parsePOPOS(), parks, polygons, parseArt(), parseEntertainment(), parseBathrooms(), parseWaterFountains(), parseFoodTrucks())
     }
 
     private nonisolated static func parseFilm() -> [FilmLocation] {
@@ -115,6 +118,22 @@ final class DataStore {
                 artistLink: p.artistlink ?? "",
                 latitude: geo.coordinates[1],
                 longitude: geo.coordinates[0]
+            )
+        }
+    }
+
+    private nonisolated static func parseEntertainment() -> [EntertainmentPlace] {
+        loadEntertainmentData().compactMap { feature in
+            guard let geo = feature.geometry, geo.coordinates.count == 2 else { return nil }
+            let p = feature.properties
+            return EntertainmentPlace(
+                id:           p.rowID,
+                name:         p.dbaName ?? "Unknown Venue",
+                address:      p.streetAddress ?? "",
+                licenseType:  EntertainmentPlace.simplifiedLicenseType(p.licenseType ?? ""),
+                neighborhood: p.analysisNeighborhood ?? "",
+                latitude:     geo.coordinates[1],
+                longitude:    geo.coordinates[0]
             )
         }
     }
