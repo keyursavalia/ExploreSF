@@ -1,19 +1,22 @@
 import SwiftUI
+import MapKit
 
 struct ParkDetailHeaderView: View {
     let place: ParkPlace
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(AppCategory.park.color.opacity(0.2))
-                .overlay(
-                    Image(systemName: "tree")
-                        .font(.system(size: 48))
-                        .foregroundStyle(AppCategory.park.color.opacity(0.6))
-                )
-                .frame(maxWidth: .infinity)
-                .frame(height: 220)
+            MapSnapshotView(
+                id: place.id,
+                coordinate: place.coordinate,
+                style: .parkSatellite,
+                category: .park,
+                cornerRadius: 20,
+                snapshotSize: CGSize(width: 390, height: 220),
+                iconSize: 48
+            )
+            .frame(maxWidth: .infinity)
+            .frame(height: 220)
 
             Text("Parks & Recreation")
                 .eyebrowStyle()
