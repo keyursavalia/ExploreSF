@@ -137,33 +137,37 @@ struct ItineraryPlanView: View {
     // MARK: - Plan actions
 
     private var planActions: some View {
-        HStack(spacing: 12) {
+        VStack(spacing: 0) {
+            Divider()
+                .background(Color.appHairline)
+                .padding(.horizontal, 20)
+                .padding(.top, 24)
+
             Button { showSetupSheet = true } label: {
-                Label("Regenerate", systemImage: "arrow.clockwise")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(Color.appInk)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(Color.appCard)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.appCardEdge, lineWidth: 1))
+                HStack(spacing: 8) {
+                    Image(systemName: "arrow.clockwise")
+                    Text("Regenerate Plan")
+                }
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(Color.appInk)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Color.appCard)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.appCardEdge, lineWidth: 1))
             }
             .buttonStyle(.plain)
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
 
             Button { showDeleteConfirm = true } label: {
-                Label("Clear Plan", systemImage: "trash")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(Color.red)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(Color.red.opacity(0.08))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.red.opacity(0.2), lineWidth: 1))
+                Text("Clear Plan")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.appInk4)
             }
             .buttonStyle(.plain)
+            .padding(.top, 14)
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 24)
     }
 
     // MARK: - Empty state
