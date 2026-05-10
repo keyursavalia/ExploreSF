@@ -7,15 +7,17 @@ final class LookAroundSceneCache {
     static let shared = LookAroundSceneCache()
     private var cache: [String: MKLookAroundScene?] = [:]
     private var inFlight: [String: Task<MKLookAroundScene?, Never>] = [:]
-    private let maxConcurrent = 3
+    private var lastStartTime: Date = .distantPast
+    // 1 at a time, min 1.5s between starts → ≤40 requests/min, well under the 50/min system limit
+    private let minInterval: TimeInterval = 1.5
     private init() {}
 
     func scene(for id: String, coordinate: CLLocationCoordinate2D) async -> MKLookAroundScene? {
         if cache.keys.contains(id) { return cache[id] ?? nil }
         if let task = inFlight[id] { return await task.value }
 
-        // Throttle: wait until a concurrent slot is free
-        while inFlight.count >= maxConcurrent {
+        // Wait until no request is in-flight AND enough time has passed since the last one started
+        while !inFlight.isEmpty || Date().timeIntervalSince(lastStartTime) < minInterval {
             try? await Task.sleep(nanoseconds: 250_000_000)
         }
 
@@ -23,6 +25,7 @@ final class LookAroundSceneCache {
         if cache.keys.contains(id) { return cache[id] ?? nil }
         if let task = inFlight[id] { return await task.value }
 
+        lastStartTime = Date()
         let task = Task<MKLookAroundScene?, Never> {
             try? await MKLookAroundSceneRequest(coordinate: coordinate).scene
         }
