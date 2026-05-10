@@ -5,27 +5,29 @@ struct BrowseListView: View {
 
     @State private var vm = BrowseListViewModel()
     @State private var showCategoryPicker = false
-    @State private var selectedFilmEntry: FilmEntry?  = nil
-    @State private var selectedPOPOS:     POPOSPlace? = nil
-    @State private var selectedPark:      ParkPlace?  = nil
-    @State private var selectedArt:       ArtPlace?   = nil
+    @State private var selectedFilmEntry:    FilmEntry?           = nil
+    @State private var selectedPOPOS:        POPOSPlace?          = nil
+    @State private var selectedPark:         ParkPlace?           = nil
+    @State private var selectedArt:          ArtPlace?            = nil
+    @State private var selectedEntertainment: EntertainmentPlace? = nil
     @State private var expandedCategory:  AppCategory? = nil
 
     @Environment(AppRouter.self) private var router
 
     // Active categories that have a browse section. Drives accordion mode independently of data loading state.
     private var browseableActiveCategories: [AppCategory] {
-        [AppCategory.film, .popos, .park, .art].filter { router.activeCategories.contains($0) }
+        [AppCategory.film, .popos, .park, .art, .entertainment].filter { router.activeCategories.contains($0) }
     }
 
     // Same as above, narrowed to categories that also have results — used for expandedCategory tracking.
     private var sectionsToShow: [AppCategory] {
         browseableActiveCategories.filter { cat in
             switch cat {
-            case .film:  return !vm.filteredFilm.isEmpty
-            case .popos: return !vm.filteredPOPOS.isEmpty
-            case .park:  return !vm.filteredParks.isEmpty
-            case .art:   return !vm.filteredArt.isEmpty
+            case .film:          return !vm.filteredFilm.isEmpty
+            case .popos:         return !vm.filteredPOPOS.isEmpty
+            case .park:          return !vm.filteredParks.isEmpty
+            case .art:           return !vm.filteredArt.isEmpty
+            case .entertainment: return !vm.filteredEntertainment.isEmpty
             }
         }
     }
@@ -50,6 +52,7 @@ struct BrowseListView: View {
                         poposSection
                         parkSection
                         artSection
+                        entertainmentSection
                     }
                 }
                 .padding(.bottom, 100)
@@ -85,10 +88,15 @@ struct BrowseListView: View {
             ArtDetailView(place: place)
                 .presentationDragIndicator(.visible)
         }
-        .onChange(of: dataStore.filmLocations, initial: true) { _, new in vm.loadFilm(new) }
-        .onChange(of: dataStore.poposPlaces,   initial: true) { _, new in vm.loadPOPOS(new) }
-        .onChange(of: dataStore.parkPlaces,    initial: true) { _, new in vm.loadParks(new) }
-        .onChange(of: dataStore.artPlaces,     initial: true) { _, new in vm.loadArt(new) }
+        .sheet(item: $selectedEntertainment) { place in
+            EntertainmentDetailView(place: place)
+                .presentationDragIndicator(.visible)
+        }
+        .onChange(of: dataStore.filmLocations,       initial: true) { _, new in vm.loadFilm(new) }
+        .onChange(of: dataStore.poposPlaces,          initial: true) { _, new in vm.loadPOPOS(new) }
+        .onChange(of: dataStore.parkPlaces,           initial: true) { _, new in vm.loadParks(new) }
+        .onChange(of: dataStore.artPlaces,            initial: true) { _, new in vm.loadArt(new) }
+        .onChange(of: dataStore.entertainmentPlaces,  initial: true) { _, new in vm.loadEntertainment(new) }
         .onChange(of: router.activeCategories, initial: true) { _, cats in
             vm.activeCategories = cats
             if let current = expandedCategory, !cats.contains(current) {
@@ -237,6 +245,29 @@ struct BrowseListView: View {
                     ForEach(Array(vm.filteredArt.enumerated()), id: \.element.id) { idx, place in
                         Button { selectedArt = place } label: {
                             ArtPlaceRowView(place: place, index: idx + 1)
+                                .padding(.horizontal, 16)
+                        }
+                        .buttonStyle(.plain)
+                        Divider().background(Color.appHairline).padding(.horizontal, 16)
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Entertainment section
+
+    @ViewBuilder
+    private var entertainmentSection: some View {
+        if router.activeCategories.contains(.entertainment) && !vm.filteredEntertainment.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                if isMultiCategory {
+                    accordionHeader(.entertainment, count: vm.filteredEntertainment.count, isExpanded: isExpanded(.entertainment))
+                }
+                if isExpanded(.entertainment) {
+                    ForEach(Array(vm.filteredEntertainment.enumerated()), id: \.element.id) { idx, place in
+                        Button { selectedEntertainment = place } label: {
+                            EntertainmentPlaceRowView(place: place, index: idx + 1)
                                 .padding(.horizontal, 16)
                         }
                         .buttonStyle(.plain)
