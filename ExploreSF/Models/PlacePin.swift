@@ -53,6 +53,15 @@ extension PlacePin {
         self.longitude    = art.longitude
     }
 
+    init(from entertainment: EntertainmentPlace) {
+        self.id           = entertainment.id
+        self.category     = .entertainment
+        self.displayName  = entertainment.name
+        self.locationName = entertainment.address
+        self.latitude     = entertainment.latitude
+        self.longitude    = entertainment.longitude
+    }
+
     init(from saved: SavedPlace) {
         let parts = saved.id.split(separator: ":", maxSplits: 1)
         self.id           = parts.count > 1 ? String(parts[1]) : saved.id
