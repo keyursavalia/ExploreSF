@@ -30,17 +30,19 @@ struct ExploreMapView: View {
             .ignoresSafeArea()
 
             MapControlsView(
-                searchText:                 $vm.searchText,
-                filterState:                $vm.filterState,
-                activeCategories:           router.activeCategories,
-                availableNeighborhoods:     viewModel.availableNeighborhoods,
-                availableYears:             viewModel.availableYears,
-                availableParkNeighborhoods: viewModel.availableParkNeighborhoods,
-                availableParkTypes:         viewModel.availableParkTypes,
-                availablePOPOSSpaceTypes:   viewModel.availablePOPOSSpaceTypes,
-                availableArtTypes:          viewModel.availableArtTypes,
-                availableArtMediums:        viewModel.availableArtMediums,
-                onActorSelected:            { name in await viewModel.applyActorFilter(name: name) }
+                searchText:                         $vm.searchText,
+                filterState:                        $vm.filterState,
+                activeCategories:                   router.activeCategories,
+                availableNeighborhoods:             viewModel.availableNeighborhoods,
+                availableYears:                     viewModel.availableYears,
+                availableParkNeighborhoods:         viewModel.availableParkNeighborhoods,
+                availableParkTypes:                 viewModel.availableParkTypes,
+                availablePOPOSSpaceTypes:           viewModel.availablePOPOSSpaceTypes,
+                availableArtTypes:                  viewModel.availableArtTypes,
+                availableArtMediums:                viewModel.availableArtMediums,
+                availableEntertainmentLicenseTypes: viewModel.availableEntertainmentLicenseTypes,
+                availableEntertainmentNeighborhoods: viewModel.availableEntertainmentNeighborhoods,
+                onActorSelected:                    { name in await viewModel.applyActorFilter(name: name) }
             )
 
             UtilityToggleButtonsView(
@@ -103,6 +105,9 @@ struct ExploreMapView: View {
         }
         .onChange(of: dataStore.artPlaces, initial: true) { _, new in
             viewModel.loadArtPlaces(new)
+        }
+        .onChange(of: dataStore.entertainmentPlaces, initial: true) { _, new in
+            viewModel.loadEntertainmentPlaces(new)
         }
         .onChange(of: dataStore.bathroomPlaces, initial: true) { _, new in
             viewModel.loadBathroomPlaces(new)
@@ -269,6 +274,10 @@ struct ExploreMapView: View {
         case .art:
             Marker(pin.displayName, systemImage: "photo.artframe", coordinate: pin.coordinate)
                 .tint(AppCategory.art.color)
+                .tag(pin)
+        case .entertainment:
+            Marker(pin.displayName, systemImage: "ticket", coordinate: pin.coordinate)
+                .tint(AppCategory.entertainment.color)
                 .tag(pin)
         }
     }
