@@ -45,15 +45,17 @@ struct ArtDetailView: View {
 
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 0) {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(AppCategory.art.color.opacity(0.2))
-                .overlay(
-                    Image(systemName: "photo.artframe")
-                        .font(.system(size: 48))
-                        .foregroundStyle(AppCategory.art.color.opacity(0.6))
-                )
-                .frame(maxWidth: .infinity)
-                .frame(height: 220)
+            MapSnapshotView(
+                id: place.id,
+                coordinate: place.coordinate,
+                style: .streetHybrid,
+                category: .art,
+                cornerRadius: 20,
+                snapshotSize: CGSize(width: 390, height: 220),
+                iconSize: 48
+            )
+            .frame(maxWidth: .infinity)
+            .frame(height: 220)
 
             Text("Public Art")
                 .eyebrowStyle()
