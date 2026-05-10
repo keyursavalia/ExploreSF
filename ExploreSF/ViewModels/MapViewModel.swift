@@ -7,11 +7,12 @@ import Observation
 @Observable
 final class MapViewModel {
     // Raw data per category
-    var filmLocations:  [FilmLocation]  = []
-    var poposPlaces:    [POPOSPlace]    = []
-    var parkPlaces:     [ParkPlace]     = []
-    var parkPolygons:   [ParkPolygon]   = []
-    var artPlaces:      [ArtPlace]      = []
+    var filmLocations:       [FilmLocation]       = []
+    var poposPlaces:         [POPOSPlace]         = []
+    var parkPlaces:          [ParkPlace]          = []
+    var parkPolygons:        [ParkPolygon]        = []
+    var artPlaces:           [ArtPlace]           = []
+    var entertainmentPlaces: [EntertainmentPlace] = []
 
     // Utility overlay data (not categories)
     var bathroomPlaces:      [BathroomPlace]      = []
@@ -45,10 +46,11 @@ final class MapViewModel {
 
     var visiblePins: [PlacePin] {
         var pins: [PlacePin] = []
-        if activeCategories.contains(.film)  { pins.append(contentsOf: filteredFilmLocations.map  { PlacePin(from: $0) }) }
-        if activeCategories.contains(.popos) { pins.append(contentsOf: filteredPOPOSPlaces.map    { PlacePin(from: $0) }) }
-        if activeCategories.contains(.park)  { pins.append(contentsOf: filteredParkPlaces.map     { PlacePin(from: $0) }) }
-        if activeCategories.contains(.art)   { pins.append(contentsOf: filteredArtPlaces.map      { PlacePin(from: $0) }) }
+        if activeCategories.contains(.film)          { pins.append(contentsOf: filteredFilmLocations.map       { PlacePin(from: $0) }) }
+        if activeCategories.contains(.popos)         { pins.append(contentsOf: filteredPOPOSPlaces.map         { PlacePin(from: $0) }) }
+        if activeCategories.contains(.park)          { pins.append(contentsOf: filteredParkPlaces.map          { PlacePin(from: $0) }) }
+        if activeCategories.contains(.art)           { pins.append(contentsOf: filteredArtPlaces.map           { PlacePin(from: $0) }) }
+        if activeCategories.contains(.entertainment) { pins.append(contentsOf: filteredEntertainmentPlaces.map { PlacePin(from: $0) }) }
         guard let region = visibleRegion else { return pins }
         return pins.filter { region.contains($0.coordinate) }
     }
@@ -171,6 +173,25 @@ final class MapViewModel {
         return result
     }
 
+    // MARK: - Entertainment filtering
+
+    var filteredEntertainmentPlaces: [EntertainmentPlace] {
+        var result = entertainmentPlaces
+        let q = searchText.trimmingCharacters(in: .whitespaces).lowercased()
+        if !q.isEmpty {
+            result = result.filter {
+                $0.name.lowercased().contains(q) || $0.address.lowercased().contains(q)
+            }
+        }
+        if let type = filterState.entertainmentLicenseType {
+            result = result.filter { $0.licenseType == type }
+        }
+        if let hood = filterState.entertainmentNeighborhood {
+            result = result.filter { $0.neighborhood == hood }
+        }
+        return result
+    }
+
     // MARK: - Available filter values (Film)
 
     var availableYears: [String] {
@@ -207,6 +228,16 @@ final class MapViewModel {
         Array(Set(artPlaces.map(\.medium)).filter { !$0.isEmpty }).sorted()
     }
 
+    // MARK: - Available filter values (Entertainment)
+
+    var availableEntertainmentLicenseTypes: [String] {
+        Array(Set(entertainmentPlaces.map(\.licenseType)).filter { !$0.isEmpty }).sorted()
+    }
+
+    var availableEntertainmentNeighborhoods: [String] {
+        Array(Set(entertainmentPlaces.map(\.neighborhood)).filter { !$0.isEmpty }).sorted()
+    }
+
     // MARK: - Data loading
 
     func loadFilmLocations(_ locations: [FilmLocation]) {
@@ -224,6 +255,10 @@ final class MapViewModel {
 
     func loadArtPlaces(_ places: [ArtPlace]) {
         self.artPlaces = places
+    }
+
+    func loadEntertainmentPlaces(_ places: [EntertainmentPlace]) {
+        self.entertainmentPlaces = places
     }
 
     func loadBathroomPlaces(_ places: [BathroomPlace]) {
@@ -277,6 +312,11 @@ final class MapViewModel {
     func artPlace(for pin: PlacePin) -> ArtPlace? {
         guard pin.category == .art else { return nil }
         return artPlaces.first { $0.id == pin.id }
+    }
+
+    func entertainmentPlace(for pin: PlacePin) -> EntertainmentPlace? {
+        guard pin.category == .entertainment else { return nil }
+        return entertainmentPlaces.first { $0.id == pin.id }
     }
 
     // MARK: - Actor filter
