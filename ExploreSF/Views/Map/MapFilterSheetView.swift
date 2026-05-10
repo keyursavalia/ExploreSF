@@ -8,20 +8,24 @@ struct MapFilterSheetView: View {
     let availableParkNeighborhoods: [String]
     let availableParkTypes:         [String]
     let availablePOPOSSpaceTypes:   [String]
-    let availableArtTypes:          [String]
-    let availableArtMediums:        [String]
-    let onActorSelected:            (String) async -> Void
-    let onDismiss:                  () -> Void
+    let availableArtTypes:                   [String]
+    let availableArtMediums:                 [String]
+    let availableEntertainmentLicenseTypes:  [String]
+    let availableEntertainmentNeighborhoods: [String]
+    let onActorSelected:                     (String) async -> Void
+    let onDismiss:                           () -> Void
 
-    @State private var showNeighborhood     = false
-    @State private var showYear             = false
-    @State private var showActor            = false
-    @State private var showParkNeighborhood = false
-    @State private var showParkType         = false
-    @State private var showPOPOSSpaceType   = false
-    @State private var showPOPOSFeature     = false
-    @State private var showArtType          = false
-    @State private var showArtMedium        = false
+    @State private var showNeighborhood              = false
+    @State private var showYear                      = false
+    @State private var showActor                     = false
+    @State private var showParkNeighborhood          = false
+    @State private var showParkType                  = false
+    @State private var showPOPOSSpaceType            = false
+    @State private var showPOPOSFeature              = false
+    @State private var showArtType                   = false
+    @State private var showArtMedium                 = false
+    @State private var showEntertainmentLicenseType  = false
+    @State private var showEntertainmentNeighborhood = false
 
     private static let poposFeatures = ["Indoor", "Food", "Art", "Restrooms"]
 
@@ -33,10 +37,11 @@ struct MapFilterSheetView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
-                    if activeCategories.contains(.film)  { filmSection }
-                    if activeCategories.contains(.park)  { parkSection }
-                    if activeCategories.contains(.popos) { poposSection }
-                    if activeCategories.contains(.art)   { artSection }
+                    if activeCategories.contains(.film)          { filmSection }
+                    if activeCategories.contains(.park)          { parkSection }
+                    if activeCategories.contains(.popos)         { poposSection }
+                    if activeCategories.contains(.art)           { artSection }
+                    if activeCategories.contains(.entertainment) { entertainmentSection }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
@@ -87,6 +92,12 @@ struct MapFilterSheetView: View {
         .sheet(isPresented: $showArtMedium) {
             FilterPickerSheetView(title: "Medium",      options: availableArtMediums,        selected: $filterState.artMedium)
         }
+        .sheet(isPresented: $showEntertainmentLicenseType) {
+            FilterPickerSheetView(title: "Venue Type",    options: availableEntertainmentLicenseTypes,  selected: $filterState.entertainmentLicenseType)
+        }
+        .sheet(isPresented: $showEntertainmentNeighborhood) {
+            FilterPickerSheetView(title: "Neighborhood",  options: availableEntertainmentNeighborhoods, selected: $filterState.entertainmentNeighborhood)
+        }
     }
 
     // MARK: - Film
@@ -127,6 +138,16 @@ struct MapFilterSheetView: View {
             sectionHeader(.art)
             filterRow(category: .art, title: "Art Type", value: filterState.artType,   onTap: { showArtType = true },   onClear: { filterState.artType   = nil })
             filterRow(category: .art, title: "Medium",   value: filterState.artMedium, onTap: { showArtMedium = true }, onClear: { filterState.artMedium = nil })
+        }
+    }
+
+    // MARK: - Entertainment
+
+    private var entertainmentSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionHeader(.entertainment)
+            filterRow(category: .entertainment, title: "Venue Type",    value: filterState.entertainmentLicenseType,  onTap: { showEntertainmentLicenseType  = true }, onClear: { filterState.entertainmentLicenseType  = nil })
+            filterRow(category: .entertainment, title: "Neighborhood",  value: filterState.entertainmentNeighborhood, onTap: { showEntertainmentNeighborhood = true }, onClear: { filterState.entertainmentNeighborhood = nil })
         }
     }
 
