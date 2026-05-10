@@ -71,15 +71,19 @@ struct BrowseListView: View {
         }
         .sheet(item: $selectedFilmEntry) { entry in
             NavigationStack { MovieDetailView(viewModel: MovieDetailViewModel(entry: entry)) }
+                .presentationDragIndicator(.visible)
         }
         .sheet(item: $selectedPOPOS) { place in
             POPOSDetailView(place: place)
+                .presentationDragIndicator(.visible)
         }
         .sheet(item: $selectedPark) { place in
             ParkDetailView(place: place, polygon: nil)
+                .presentationDragIndicator(.visible)
         }
         .sheet(item: $selectedArt) { place in
             ArtDetailView(place: place)
+                .presentationDragIndicator(.visible)
         }
         .onChange(of: dataStore.filmLocations, initial: true) { _, new in vm.loadFilm(new) }
         .onChange(of: dataStore.poposPlaces,   initial: true) { _, new in vm.loadPOPOS(new) }
