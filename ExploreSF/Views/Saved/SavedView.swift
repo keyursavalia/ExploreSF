@@ -14,7 +14,7 @@ struct SavedView: View {
     @State private var activeTab:  SavedTab = .saved
 
     private var groupedByCategory: [(AppCategory, [SavedPlace])] {
-        let order: [AppCategory] = [.film, .popos, .park, .art]
+        let order: [AppCategory] = [.film, .popos, .park, .art, .entertainment]
         return order.compactMap { cat in
             let places = savedPlaces.filter { $0.categoryRaw == cat.rawValue }
             return places.isEmpty ? nil : (cat, places)
