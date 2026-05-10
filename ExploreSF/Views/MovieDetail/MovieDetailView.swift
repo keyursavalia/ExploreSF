@@ -44,6 +44,7 @@ struct MovieDetailView: View {
                 }
             }
         }
+        .background(Color.appPaper)
         .task { await viewModel.loadDetails() }
     }
 }
