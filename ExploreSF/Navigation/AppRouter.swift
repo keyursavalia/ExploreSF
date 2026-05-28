@@ -11,10 +11,28 @@ enum AppTab: Int {
 @MainActor
 @Observable
 final class AppRouter {
-    var hasCompletedOnboarding: Bool = false
-    var activeCategories: Set<AppCategory> = []
+    private enum Keys {
+        static let onboardingDone = "hasCompletedOnboarding"
+        static let activeCategories = "activeCategories"
+    }
+
+    var hasCompletedOnboarding: Bool {
+        didSet { UserDefaults.standard.set(hasCompletedOnboarding, forKey: Keys.onboardingDone) }
+    }
+    var activeCategories: Set<AppCategory> {
+        didSet {
+            let raw = activeCategories.map(\.rawValue)
+            UserDefaults.standard.set(raw, forKey: Keys.activeCategories)
+        }
+    }
     var selectedTab: AppTab = .map
     var pendingPin: PlacePin? = nil
+
+    init() {
+        hasCompletedOnboarding = UserDefaults.standard.bool(forKey: Keys.onboardingDone)
+        let saved = UserDefaults.standard.stringArray(forKey: Keys.activeCategories) ?? []
+        activeCategories = Set(saved.compactMap(AppCategory.init(rawValue:)))
+    }
 
     var isReadyForMap: Bool {
         hasCompletedOnboarding && !activeCategories.isEmpty
