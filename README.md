@@ -24,7 +24,7 @@
 
 ## Origin — Built at SFHacks, Won the Gator Sprint
 
-ExploreSF was built in a single day at **SFHacks' Gator Sprint** on **May 1st, 2026** — a hackathon sprint held at SF State with the theme *"Build for SF."* The premise was simple: build something that makes San Francisco more discoverable. I shipped a complete iOS app from scratch in one sprint, presented it, and won.
+ExploreSF was built in a single day at **SFHacks' Gator Sprint** on **May 1st, 2026** — a hackathon sprint held at SF State with the theme *"Build for SF."* The premise was simple: build something that makes San Francisco more discoverable. I shipped a complete iOS app from scratch in one sprint, presented it, and won 2nd prize.
 
 <p align="center">
   <img src="SCREENS/hackathon.jpg" width="420" alt="Keyur Savalia winning the SFHacks Gator Sprint" />
