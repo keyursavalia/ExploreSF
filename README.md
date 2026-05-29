@@ -292,6 +292,23 @@ Fork the repo, branch from `main`, one fix or feature per PR. Commit prefixes: `
 
 ---
 
+## Data Sources
+
+All place data is sourced from [DataSF](https://data.sfgov.org) — the City and County of San Francisco's open data portal. Datasets are published under the [Public Domain Dedication and License (PDDL)](https://opendatacommons.org/licenses/pddl/1-0/).
+
+| Dataset | Publisher | Link |
+|---|---|---|
+| Film Locations in San Francisco | SF Film Commission | [data.sfgov.org ↗](https://data.sfgov.org/Culture-and-Recreation/Film-Locations-in-San-Francisco/yitu-d5am) |
+| Privately Owned Public Open Spaces (POPOS) | SF Planning Department | [data.sfgov.org ↗](https://data.sfgov.org/Culture-and-Recreation/Privately-Owned-Public-Open-Spaces/65ik-7wqd) |
+| Recreation and Parks Properties | SF Recreation and Parks Department | [data.sfgov.org ↗](https://data.sfgov.org/Culture-and-Recreation/Recreation-and-Parks-Properties/gtr9-ntp6) |
+| Public Art | SF Arts Commission | [data.sfgov.org ↗](https://data.sfgov.org/Culture-and-Recreation/Public-Art/gfan-jd9y) |
+| Entertainment Commission's Places of Entertainment | SF Entertainment Commission | [data.sfgov.org ↗](https://data.sfgov.org/Culture-and-Recreation/Entertainment-Commission-s-Places-of-Entertainment/86e8-rfem) |
+| San Francisco Public Bathrooms and Water Fountains | SF Recreation and Parks / Public Works | [data.sfgov.org ↗](https://data.sfgov.org/City-Infrastructure/San-Francisco-Public-Bathrooms-and-Water-Fountains/hvr9-9r5z) |
+
+Film and TV metadata (posters, cast, ratings, overviews) is provided by the [TMDB API](https://www.themoviedb.org). This product uses the TMDB API but is not endorsed or certified by TMDB.
+
+---
+
 ## License
 
 [MIT](LICENSE) · © 2026 Keyur Savalia
