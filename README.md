@@ -90,15 +90,6 @@ Each category is its own color-coded layer. Toggle them independently from the b
 
 ## Screenshots
 
-### Detail & Street-Level Preview
-
-<table align="center"><tr>
-  <td align="center"><img src="SCREENS/park-detail.png" width="220" alt="Park detail sheet" /><br/><sub>244-acre detail sheet with LookAround</sub></td>
-  <td align="center"><img src="SCREENS/lookaround.png" width="220" alt="LookAround immersive view" /><br/><sub>Apple LookAround — immersive street view</sub></td>
-</tr></table>
-
-<br/>
-
 ### Plan Your Day — Itinerary Builder
 
 <table align="center"><tr>
@@ -136,17 +127,20 @@ Each category is its own color-coded layer. Toggle them independently from the b
   - **Entertainment** — Venue type, neighborhood
 - Actor filter runs a TMDB person search and collects all titles from their film & TV credits, then narrows the map to only those filming locations
 
-### Detail Screens
+### Detail Screens & Street-Level Preview
+
+<table align="center"><tr>
+  <td align="center"><img src="SCREENS/park-detail.png" width="220" alt="Park detail sheet" /><br/><sub>244-acre detail sheet with LookAround</sub></td>
+  <td align="center"><img src="SCREENS/lookaround.png" width="220" alt="LookAround immersive view" /><br/><sub>Apple LookAround — immersive street view</sub></td>
+</tr></table>
+
+<br/>
 
 - Every category has a full-screen detail modal: header, LookAround hero, info table, and directions button
 - **Film detail** goes further — TMDB-backed poster, rating, tagline, overview, director, top cast, genres, runtime, and a complete list of every filming location, each one tappable to fly to that pin on the map
 - **POPOS detail** surfaces amenity chips (indoor/outdoor, food, art, restrooms, seating) and opening hours
-
-### Apple LookAround
-
-- Available at every pin across all five categories
-- Singleton scene cache with **rate limiting** (≤ 40 requests/minute, ≥ 1.5s between requests) and in-flight task deduplication — well within Apple's API limits even when panning across hundreds of pins
-- Lazy-loaded thumbnails in list rows and detail sheets; falls back to a category-colored icon placeholder when street-level imagery is unavailable
+- Apple **LookAround** is available at every pin across all five categories — singleton scene cache with **rate limiting** (≤ 40 requests/minute, ≥ 1.5s between requests) and in-flight task deduplication
+- Lazy-loaded LookAround thumbnails in list rows and detail sheets; falls back to a category-colored icon placeholder when street-level imagery is unavailable
 
 ### Bookmarks & Saved Places
 
