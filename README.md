@@ -88,17 +88,6 @@ Each category is its own color-coded layer. Toggle them independently from the b
 
 ---
 
-## Screenshots
-
-### Plan Your Day — Itinerary Builder
-
-<table align="center"><tr>
-  <td align="center"><img src="SCREENS/itinerary-setup.png" width="220" alt="Itinerary setup sheet" /><br/><sub>Select saved places, set options, generate</sub></td>
-  <td align="center"><img src="SCREENS/itinerary-map.png" width="220" alt="Itinerary on map" /><br/><sub>GPS-optimized route with numbered stops</sub></td>
-</tr></table>
-
----
-
 ## Features
 
 ### The Map
@@ -156,6 +145,13 @@ Each category is its own color-coded layer. Toggle them independently from the b
 
 ### Itinerary Planner
 
+<table align="center"><tr>
+  <td align="center"><img src="SCREENS/itinerary-setup.png" width="220" alt="Itinerary setup sheet" /><br/><sub>Select saved places, set options, generate</sub></td>
+  <td align="center"><img src="SCREENS/itinerary-map.png" width="220" alt="Itinerary on map" /><br/><sub>GPS-optimized route with numbered stops</sub></td>
+</tr></table>
+
+<br/>
+
 - Select any combination of saved places and tap **Generate Itinerary**
 - **Nearest-neighbor routing** from your GPS position — greedily picks the closest unvisited stop each step for a practical walking order
 - Options: cap the total number of stops; spread stops across **1–7 days** for a multi-day trip
@@ -163,9 +159,7 @@ Each category is its own color-coded layer. Toggle them independently from the b
 - Each stop has a completion toggle — mark it visited as you walk
 - Itinerary map mode: numbered stop annotations + dashed `MapPolyline` connector per day
 
----
-
-## How the Itinerary Planner Works
+#### How It Works
 
 The planner solves a practical variant of the Travelling Salesman Problem — not optimally (NP-hard), but well enough for city walking.
 
