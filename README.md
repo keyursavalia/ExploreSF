@@ -88,17 +88,7 @@ Each category is its own color-coded layer. Toggle them independently from the b
 
 ---
 
-## Features
-
-### The Map
-
-- Live **MapKit** map with color-coded markers for all five categories
-- **Park polygon boundaries** rendered as semi-transparent `MapPolygon` overlays — see the actual footprint of every Recreation & Parks property
-- **Utility overlays** for public bathrooms, water fountains (with bottle-filler & dog fountain flags), and food trucks — each toggled independently from a floating side bar
-- **Category quick-toggle bar** at the bottom — show exactly the layers you want, switch in one tap
-- Pin tap opens a bottom sheet with place summary, LookAround preview, and a deep-link into Apple Maps for directions
-
-### Browse & Search
+## Browse & Search
 
 <table align="center"><tr>
   <td align="center"><img src="SCREENS/browse.png" width="220" alt="Browse list" /><br/><sub>1,406 places across five categories</sub></td>
