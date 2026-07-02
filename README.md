@@ -62,7 +62,7 @@ Three panels introduce the app's concept — what the city holds, how to explore
 
 ---
 
-## The City, Mapped — Five Categories, 1,406 Places
+## The Map — Five Categories, 1,406 Places
 
 <table align="center"><tr>
   <td align="center"><img src="SCREENS/map-film.png" width="185" alt="Film Locations map" /><br/><sub>🎬 Film Locations — 299 places</sub></td>
@@ -79,6 +79,12 @@ Three panels introduce the app's concept — what the city holds, how to explore
 </tr></table>
 
 Each category is its own color-coded layer. Toggle them independently from the bottom bar, or combine all five for a complete picture of the city.
+
+- Live **MapKit** map with color-coded markers for all five categories
+- **Park polygon boundaries** rendered as semi-transparent `MapPolygon` overlays — see the actual footprint of every Recreation & Parks property
+- **Utility overlays** for public bathrooms, water fountains (with bottle-filler & dog fountain flags), and food trucks — each toggled independently from a floating side bar
+- **Category quick-toggle bar** at the bottom — show exactly the layers you want, switch in one tap
+- Pin tap opens a bottom sheet with place summary, LookAround preview, and a deep-link into Apple Maps for directions
 
 ---
 
