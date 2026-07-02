@@ -47,6 +47,21 @@ No account. No cloud. No subscriptions. Every dataset is bundled on-device.
 
 ---
 
+## First Launch — Onboarding & Category Picker
+
+<table align="center"><tr>
+  <td align="center"><img src="SCREENS/onboarding-1.png" width="185" alt="Welcome screen" /><br/><sub>San Francisco, curated.</sub></td>
+  <td align="center"><img src="SCREENS/onboarding-2.png" width="185" alt="How it works" /><br/><sub>Pick what you want to see.</sub></td>
+  <td align="center"><img src="SCREENS/onboarding-3.png" width="185" alt="Save and plan" /><br/><sub>Save places, build a day.</sub></td>
+  <td align="center"><img src="SCREENS/category-picker.png" width="185" alt="Category picker" /><br/><sub>Choose your layers</sub></td>
+</tr></table>
+
+<br/>
+
+Three panels introduce the app's concept — what the city holds, how to explore it, and how to turn bookmarks into a walkable plan. After onboarding, a full-screen category picker lets you choose exactly which layers to load onto the map. Your selection persists across restarts and can be changed any time from the map tab.
+
+---
+
 ## The City, Mapped — Five Categories, 1,406 Places
 
 <table align="center"><tr>
@@ -68,17 +83,6 @@ Each category is its own color-coded layer. Toggle them independently from the b
 ---
 
 ## Screenshots
-
-### First Launch — Onboarding & Category Picker
-
-<table align="center"><tr>
-  <td align="center"><img src="SCREENS/onboarding-1.png" width="185" alt="Welcome screen" /><br/><sub>San Francisco, curated.</sub></td>
-  <td align="center"><img src="SCREENS/onboarding-2.png" width="185" alt="How it works" /><br/><sub>Pick what you want to see.</sub></td>
-  <td align="center"><img src="SCREENS/onboarding-3.png" width="185" alt="Save and plan" /><br/><sub>Save places, build a day.</sub></td>
-  <td align="center"><img src="SCREENS/category-picker.png" width="185" alt="Category picker" /><br/><sub>Choose your layers</sub></td>
-</tr></table>
-
-<br/>
 
 ### Browse & Discover
 
