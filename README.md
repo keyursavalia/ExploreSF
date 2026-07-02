@@ -90,15 +90,6 @@ Each category is its own color-coded layer. Toggle them independently from the b
 
 ## Screenshots
 
-### Browse & Discover
-
-<table align="center"><tr>
-  <td align="center"><img src="SCREENS/browse.png" width="220" alt="Browse list" /><br/><sub>1,406 places across five categories</sub></td>
-  <td align="center"><img src="SCREENS/saved.png" width="220" alt="Saved places" /><br/><sub>Bookmarks, grouped by category</sub></td>
-</tr></table>
-
-<br/>
-
 ### Detail & Street-Level Preview
 
 <table align="center"><tr>
@@ -128,6 +119,12 @@ Each category is its own color-coded layer. Toggle them independently from the b
 - Pin tap opens a bottom sheet with place summary, LookAround preview, and a deep-link into Apple Maps for directions
 
 ### Browse & Search
+
+<table align="center"><tr>
+  <td align="center"><img src="SCREENS/browse.png" width="220" alt="Browse list" /><br/><sub>1,406 places across five categories</sub></td>
+</tr></table>
+
+<br/>
 
 - Editorial accordion list across all five categories — **1,406 places** total
 - Live search across titles, addresses, and location names
