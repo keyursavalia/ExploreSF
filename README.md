@@ -106,7 +106,9 @@ Each category is its own color-coded layer. Toggle them independently from the b
   - **Entertainment** — Venue type, neighborhood
 - Actor filter runs a TMDB person search and collects all titles from their film & TV credits, then narrows the map to only those filming locations
 
-### Detail Screens & Street-Level Preview
+---
+
+## Detail Screens & Street-Level Preview
 
 <table align="center"><tr>
   <td align="center"><img src="SCREENS/park-detail.png" width="220" alt="Park detail sheet" /><br/><sub>244-acre detail sheet with LookAround</sub></td>
@@ -121,7 +123,9 @@ Each category is its own color-coded layer. Toggle them independently from the b
 - Apple **LookAround** is available at every pin across all five categories — singleton scene cache with **rate limiting** (≤ 40 requests/minute, ≥ 1.5s between requests) and in-flight task deduplication
 - Lazy-loaded LookAround thumbnails in list rows and detail sheets; falls back to a category-colored icon placeholder when street-level imagery is unavailable
 
-### Bookmarks & Saved Places
+---
+
+## Bookmarks & Saved Places
 
 <table align="center"><tr>
   <td align="center"><img src="SCREENS/saved.png" width="220" alt="Saved places" /><br/><sub>Bookmarks, grouped by category</sub></td>
@@ -133,7 +137,9 @@ Each category is its own color-coded layer. Toggle them independently from the b
 - **SwiftData** persistence with a compound key (`category:originalId`) for uniqueness
 - Saved tab groups bookmarks by category with swipe-to-delete and multi-select bulk delete
 
-### Itinerary Planner
+---
+
+## Itinerary Planner
 
 <table align="center"><tr>
   <td align="center"><img src="SCREENS/itinerary-setup.png" width="220" alt="Itinerary setup sheet" /><br/><sub>Select saved places, set options, generate</sub></td>
@@ -149,7 +155,7 @@ Each category is its own color-coded layer. Toggle them independently from the b
 - Each stop has a completion toggle — mark it visited as you walk
 - Itinerary map mode: numbered stop annotations + dashed `MapPolyline` connector per day
 
-#### How It Works
+### How It Works
 
 The planner solves a practical variant of the Travelling Salesman Problem — not optimally (NP-hard), but well enough for city walking.
 
