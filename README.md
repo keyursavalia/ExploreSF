@@ -150,6 +150,12 @@ Each category is its own color-coded layer. Toggle them independently from the b
 
 ### Bookmarks & Saved Places
 
+<table align="center"><tr>
+  <td align="center"><img src="SCREENS/saved.png" width="220" alt="Saved places" /><br/><sub>Bookmarks, grouped by category</sub></td>
+</tr></table>
+
+<br/>
+
 - Tap the bookmark icon on any pin, list row, or detail screen to save a place
 - **SwiftData** persistence with a compound key (`category:originalId`) for uniqueness
 - Saved tab groups bookmarks by category with swipe-to-delete and multi-select bulk delete
